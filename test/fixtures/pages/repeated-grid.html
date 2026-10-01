@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: repeated grid text</title></head>
+<body>
+<main>
+<h1>Spring catalogue</h1>
+<ul id="grid">
+<li><p>Product Alpha</p><p>$10</p><button>Add to cart</button></li>
+<li><p>Product Bravo</p><p>$10</p><button>Add to cart</button></li>
+<li><p>Product Charlie</p><p>$10</p><button>Add to cart</button></li>
+<li><p>Product Delta</p><p>$10</p><button>Add to cart</button></li>
+</ul>
+</main>
+<script>
+const grid = document.getElementById("grid");
+for (const name of ["Product Echo", "Product Foxtrot"]) {
+  const li = document.createElement("li");
+  li.innerHTML = "<p>" + name + "</p><p>$100</p><button>Add to cart</button>";
+  grid.append(li);
+}
+</script>
+</body>
+</html>

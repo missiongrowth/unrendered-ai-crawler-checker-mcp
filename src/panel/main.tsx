@@ -56,7 +56,7 @@ function StatusMessage({ phase, product, onRetry }: { phase: Exclude<Phase, { st
       return (
         <section class="empty">
           <h2>Click the {product} icon to analyse this tab</h2>
-          <p>The extension reads a tab only after you click its icon.</p>
+          <p>The extension reads a tab only after you click its icon. Chrome does not let extensions read its own pages (chrome://), the Chrome Web Store or PDFs opened in Chrome.</p>
         </section>
       );
   }

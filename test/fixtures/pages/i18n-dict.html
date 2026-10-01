@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: inline i18n dictionary</title></head>
+<body>
+<main id="root"></main>
+<script>
+window.__I18N__ = {
+  "home.title": "Dictionary driven headline for the pricing page",
+  "home.body": "Every label on this page is looked up in an inline dictionary and written into the document by script."
+};
+document.getElementById("root").innerHTML =
+  "<h1>" + window.__I18N__["home.title"] + "</h1><p>" + window.__I18N__["home.body"] + "</p>";
+</script>
+</body>
+</html>

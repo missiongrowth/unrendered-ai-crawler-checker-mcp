@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: FAQ added by script</title></head>
+<body>
+<main>
+<h1>Frequently asked questions</h1>
+<div id="faq"></div>
+</main>
+<script>
+const items = [
+  ["How long does delivery take", "Delivery takes between three and five working days inside the country."],
+  ["Can I return an opened item", "Opened items can be returned within thirty days if they are in good condition."]
+];
+document.getElementById("faq").innerHTML = items
+  .map(([q, a]) => "<details><summary>" + q + "</summary><p>" + a + "</p></details>")
+  .join("");
+</script>
+</body>
+</html>

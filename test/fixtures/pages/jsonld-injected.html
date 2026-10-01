@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: JSON-LD injected by script</title></head>
+<body>
+<main>
+<h1>Kettle product page</h1>
+<p>The Copperline kettle holds one and a half litres and switches off by itself when the water boils.</p>
+</main>
+<script>
+const ld = document.createElement("script");
+ld.type = "application/ld+json";
+ld.textContent = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Copperline kettle",
+  offers: { "@type": "Offer", price: "39.90", priceCurrency: "EUR" }
+});
+document.head.append(ld);
+</script>
+</body>
+</html>

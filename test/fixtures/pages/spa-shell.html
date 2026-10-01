@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: single page app shell</title></head>
+<body>
+<header><h1>Single page shell</h1></header>
+<main id="route"></main>
+<script>
+const routes = {
+  "/spa/start": "Start route content is rendered by the client side router.",
+  "/spa/products": "Products route content is rendered by the client side router."
+};
+function render() {
+  const text = location.hash === "#/about"
+    ? "About route content is selected by the hash fragment alone."
+    : routes[location.pathname] || "Unknown route";
+  document.getElementById("route").innerHTML = "<p>" + text + "</p>";
+}
+render();
+if (location.pathname === "/spa/start") {
+  history.pushState(null, "", "/spa/products");
+  render();
+}
+</script>
+</body>
+</html>

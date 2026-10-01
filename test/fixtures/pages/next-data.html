@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: Next.js style hydration data</title></head>
+<body>
+<main id="__next"></main>
+<script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{"headline":"Pricing guide for the Atlas workbench","summary":"The Atlas workbench ships flat packed and needs two people to assemble it in under an hour."}},"page":"/pricing"}</script>
+<script>(self.__next_f=self.__next_f||[]).push([0])</script>
+<script>self.__next_f.push([1,"a:T4a,Flight rows carry this paragraph about warranty terms for the Atlas workbench"])</script>
+<script>
+const data = JSON.parse(document.getElementById("__NEXT_DATA__").textContent).props.pageProps;
+document.getElementById("__next").innerHTML =
+  "<h1>" + data.headline + "</h1><p>" + data.summary + "</p>" +
+  "<p>Flight rows carry this paragraph about warranty terms for the Atlas workbench</p>";
+</script>
+</body>
+</html>

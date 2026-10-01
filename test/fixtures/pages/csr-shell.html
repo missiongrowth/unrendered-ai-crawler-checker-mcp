@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: client-rendered shell</title></head>
+<body>
+<main id="app"></main>
+<noscript><p>Enable JavaScript to view this page.</p></noscript>
+<script>
+document.getElementById("app").innerHTML =
+  "<h1>Client rendered dashboard heading</h1>" +
+  "<p>This paragraph is created in the browser after the script runs and is absent from the server response.</p>" +
+  "<p>A second client rendered paragraph keeps the block count above one for the comparison.</p>";
+</script>
+</body>
+</html>

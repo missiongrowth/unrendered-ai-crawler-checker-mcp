@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: closed shadow root</title></head>
+<body>
+<main>
+<h1>Closed shadow root</h1>
+<p>A light DOM paragraph that ships in the server response for comparison.</p>
+<div id="host"></div>
+</main>
+<script>
+const root = document.getElementById("host").attachShadow({ mode: "closed" });
+root.innerHTML = "<p>This paragraph is rendered inside a closed shadow root by script only.</p>";
+</script>
+</body>
+</html>

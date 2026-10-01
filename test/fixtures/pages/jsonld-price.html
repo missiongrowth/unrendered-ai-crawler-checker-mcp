@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fixture: JSON-LD price changed by script</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Copperline kettle","offers":{"@type":"Offer","price":"39.90","priceCurrency":"EUR"}}</script>
+</head>
+<body>
+<main>
+<h1>Copperline kettle</h1>
+<p id="price">Price 39.90 EUR</p>
+</main>
+<script>
+const ld = document.querySelector("script[type='application/ld+json']");
+ld.textContent = ld.textContent.replace("39.90", "44.90");
+document.getElementById("price").textContent = "Price 44.90 EUR";
+</script>
+</body>
+</html>

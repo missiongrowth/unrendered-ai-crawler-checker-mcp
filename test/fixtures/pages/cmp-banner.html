@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: consent banner</title></head>
+<body>
+<main>
+<h1>Cookie banner page</h1>
+<p>The article body is part of the server response and is complete.</p>
+</main>
+<script>
+setTimeout(() => {
+  const dialog = document.createElement("div");
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.innerHTML = "<p>We use cookies to measure traffic on this site.</p><button>Accept all</button>";
+  document.body.append(dialog);
+}, 300);
+</script>
+</body>
+</html>

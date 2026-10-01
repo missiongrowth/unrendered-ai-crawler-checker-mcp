@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Original server title</title>
+<link rel="canonical" href="/p/js-meta">
+<meta name="robots" content="index,follow">
+</head>
+<body>
+<main>
+<h1>Metadata rewritten by script</h1>
+<p>The head of this page is changed by script after load so the field table shows differences.</p>
+</main>
+<script>
+document.title = "Rewritten browser title";
+document.querySelector("link[rel=canonical]").setAttribute("href", "/p/js-meta-canonical");
+document.querySelector("meta[name=robots]").setAttribute("content", "noindex");
+const description = document.createElement("meta");
+description.name = "description";
+description.content = "Description added by script only";
+document.head.append(description);
+</script>
+</body>
+</html>
