@@ -15,4 +15,6 @@ export const CONFIG = {
   minTokensForFuzzy: 4,
   /** Raw tokens scanned around an alignment gap when looking for a partial match. */
   partialWindowTokens: 4000,
+  /** Show the "content depends on your cookies" notice when sending cookies raises all-text coverage by at least this share. */
+  cookieLiftNotice: 0.1,
 } as const;
