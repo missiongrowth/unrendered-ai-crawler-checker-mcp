@@ -215,20 +215,21 @@ function App() {
 
   return (
     <div id="app" data-status={dataStatus(phase)}>
-      <header class="top">
-        <div class="top-text">
-          <h1>{product}</h1>
-          {analysed && (
-            <p class="page-url">
-              <MiddleTruncate text={hostAndPath(analysed.snapshot.url)} />
-            </p>
-          )}
-          {ok && <p class="status-line num">{statusLine(ok.report, ok.snapshot)}</p>}
-        </div>
+      <header class="brand">
+        <img src="icons/icon-32.png" width="20" height="20" alt="" />
+        <span class="brand-name">{product}</span>
         <button type="button" class="icon-btn hover-row" aria-label="Analyse again" title="Analyse again" disabled={phase.status === "loading"} onClick={rerun}>
           <IconRefresh />
         </button>
       </header>
+      {analysed && (
+        <div class="page">
+          <h1>
+            <MiddleTruncate text={hostAndPath(analysed.snapshot.url)} />
+          </h1>
+          {ok && <p class="status-line num">{statusLine(ok.report, ok.snapshot)}</p>}
+        </div>
+      )}
       <Tabs active={tab} onSelect={setTab} fieldCount={ok ? differsCount(ok.report) : null} />
       {changed && (
         <div class="stale" role="status">
@@ -253,10 +254,14 @@ function App() {
         </Panel>
       </main>
       <footer>
-        Free and open source · Made by{" "}
-        <a href="https://missiongrowth.io" target="_blank" rel="noreferrer">
-          Mission Growth
-        </a>
+        <img src="icons/mission-growth.svg" width="14" height="17" alt="" />
+        <span>
+          Made by{" "}
+          <a href="https://missiongrowth.io" target="_blank" rel="noreferrer">
+            Mission Growth
+          </a>{" "}
+          · Free and open source
+        </span>
       </footer>
     </div>
   );

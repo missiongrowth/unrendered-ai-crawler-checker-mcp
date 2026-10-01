@@ -39,6 +39,9 @@ Bots
 Share
 • A 1200 × 630 image, a one-line summary and a Markdown report.
 
+In your AI assistant
+• The same analysis also runs as an MCP server, so an assistant such as Claude or Cursor can check a page for you. Setup: missiongrowth.io/tools/unrendered
+
 How it measures
 After the page settles, the same tab fetches the URL again without cookies, as a crawler would, and matches each rendered text block, in order, against the raw HTML. A page that answers with an error, a redirect or a challenge page from Cloudflare, AWS WAF or DataDome gets no percentage, because the raw HTML is not the page.
 

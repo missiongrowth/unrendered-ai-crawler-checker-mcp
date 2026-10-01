@@ -5,6 +5,7 @@ import { HERO_SUB, NO_MAIN_TEXT, wordsOf } from "../copy";
 import { heroText, renderGroups, topMissing, wordsOnlyAfterJs, type OkReport } from "../metrics";
 import { CARD_HEIGHT, CARD_WIDTH, drawCard } from "../share/card";
 import { markdownReport, summaryLine } from "../share/markdown";
+import { ExternalLink } from "./ui";
 
 const messageOf = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
@@ -121,6 +122,13 @@ export function ShareView({ report, snapshot, product }: { report: OkReport; sna
             Copy Markdown report
           </button>
         </div>
+      </section>
+      <section class="share-text">
+        <div class="section-head">
+          <h2>In your AI assistant</h2>
+        </div>
+        <p>The same analysis runs as an MCP server, so an assistant such as Claude or Cursor can check a page for you.</p>
+        <ExternalLink href="https://missiongrowth.io/tools/unrendered#mcp">Set up the MCP server</ExternalLink>
       </section>
       <p class="muted" role="status">
         {message}

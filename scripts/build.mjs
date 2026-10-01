@@ -27,6 +27,7 @@ await Promise.all([
   cp("LICENSE", `${out}/LICENSE`),
   cp("src/manifest.json", `${out}/manifest.json`),
   ...[16, 32, 48, 128].map((size) => cp(`src/icons/icon-${size}.png`, `${out}/icons/icon-${size}.png`)),
+  cp("src/icons/mission-growth.svg", `${out}/icons/mission-growth.svg`),
   cp("src/panel/index.html", `${out}/panel.html`),
   cp("src/panel/panel.css", `${out}/panel.css`),
 ]);
