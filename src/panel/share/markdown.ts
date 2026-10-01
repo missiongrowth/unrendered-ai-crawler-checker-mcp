@@ -26,7 +26,7 @@ export function markdownReport(report: OkReport, snapshot: Snapshot, product: st
     "",
     wordsLine(wordsOnlyAfterJs(report)),
     "",
-    ...stats.map(([name, c]) => `- ${name}: ${percentText(c)} (${wordsOf(c.credited, c.total)})`),
+    ...stats.map(([name, c]) => `- ${name}: ${percentText(c)}${c.total === 0 ? "" : ` (${wordsOf(c.credited, c.total)})`}`),
     "",
     "## Text blocks",
     "",

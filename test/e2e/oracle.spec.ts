@@ -129,6 +129,19 @@ test("perf: 5000 blocks analysed within the budget", async ({ ext, servers }) =>
   expect(sincePanelLoad - CONFIG.settleQuietMs, `ready ${Math.round(sincePanelLoad)} ms after the panel loaded`).toBeLessThan(1500);
 });
 
+test("states: no text in the main content is said once, with nothing to share", async ({ ext, servers }) => {
+  const page = await ext.ctx.newPage();
+  await page.goto(`${servers.origins.main}/p/no-main-text`);
+  await page.waitForLoadState("load");
+  const { panel, status } = await analyse(ext, page);
+  expect(status).toBe("ready");
+  await expect(panel.locator(".hero")).toHaveText("No textThe main content has no visible text, so there is nothing to compare.");
+  await expect(panel.locator('[data-metric="hidden"]')).toHaveText("None");
+  await openTab(panel, "Share");
+  await expect(panel.getByText("The main content has no visible text, so there is nothing to compare.").filter({ visible: true })).toHaveCount(1);
+  await expect(panel.getByRole("button", { name: "Create image" })).toHaveCount(0);
+});
+
 const GATES = { "gate-status": "http-status", "gate-challenge": "challenge", "gate-redirect": "different-url" } as const;
 
 for (const [path, kind] of Object.entries(GATES)) {

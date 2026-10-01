@@ -12,7 +12,7 @@ export const percent = (c: Coverage): number | null => (c.total === 0 ? null : M
 
 export const percentText = (c: Coverage): string => {
   const p = percent(c);
-  return p === null ? "n/a" : `${p}%`;
+  return p === null ? "None" : `${p}%`;
 };
 
 export const isCounted = (b: ClassifiedBlock): boolean => !b.hidden && b.region !== "dialog";

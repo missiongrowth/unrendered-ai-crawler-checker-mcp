@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "preact/hooks";
 import type { Snapshot } from "../../messages";
 import { STATES } from "../../states";
-import { HERO_SUB, wordsOf } from "../copy";
+import { HERO_SUB, NO_MAIN_TEXT, wordsOf } from "../copy";
 import { heroText, renderGroups, topMissing, wordsOnlyAfterJs, type OkReport } from "../metrics";
 import { CARD_HEIGHT, CARD_WIDTH, drawCard } from "../share/card";
 import { markdownReport, summaryLine } from "../share/markdown";
@@ -91,6 +91,7 @@ export function ShareView({ report, snapshot, product }: { report: OkReport; sna
     return done;
   };
 
+  if (report.main.total === 0) return <p class="muted">{NO_MAIN_TEXT}</p>;
   return (
     <>
       <section>

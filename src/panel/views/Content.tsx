@@ -4,7 +4,7 @@ import type { ClassifiedBlock, GateFailure } from "../../core/analyze";
 import { RENDER_STUDY } from "../../data/bots";
 import type { Snapshot } from "../../messages";
 import { STATES } from "../../states";
-import { GROUP_LABEL, HERO_SUB, MAIN_BASIS, STAT_LABELS, wordsLine, wordsOf } from "../copy";
+import { GROUP_LABEL, HERO_SUB, MAIN_BASIS, NO_MAIN_TEXT, STAT_LABELS, wordsLine, wordsOf } from "../copy";
 import { heroText, notices, percentText, renderGroups, STATE_ORDER, stateCounts, wordsOnlyAfterJs, type OkReport, type RenderGroup } from "../metrics";
 import { postContent } from "../session";
 import { Disclosure, ExternalLink, Notice } from "./ui";
@@ -63,7 +63,7 @@ function Stat({ name, metric, coverage }: { name: string; metric: string; covera
       <strong class="num" data-metric={metric}>
         {percentText(coverage)}
       </strong>
-      <span class="stat-sub num">{wordsOf(coverage.credited, coverage.total)}</span>
+      {coverage.total > 0 && <span class="stat-sub num">{wordsOf(coverage.credited, coverage.total)}</span>}
     </div>
   );
 }
@@ -157,9 +157,15 @@ export function ContentView({ report, snapshot }: { report: OkReport; snapshot: 
     <>
       <section class="hero">
         <p class="hero-number num">{heroText(report.main)}</p>
-        <p class="hero-sub">{HERO_SUB}</p>
-        <RenderBar groups={groups} />
-        <p class="hero-words">{wordsLine(wordsOnlyAfterJs(report))}</p>
+        {report.main.total === 0 ? (
+          <p class="hero-sub">{NO_MAIN_TEXT}</p>
+        ) : (
+          <>
+            <p class="hero-sub">{HERO_SUB}</p>
+            <RenderBar groups={groups} />
+            <p class="hero-words">{wordsLine(wordsOnlyAfterJs(report))}</p>
+          </>
+        )}
       </section>
       <section class="stats">
         <Stat name={STAT_LABELS.main} metric="main" coverage={report.main} />

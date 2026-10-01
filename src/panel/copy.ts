@@ -32,6 +32,7 @@ export const MAIN_BASIS = {
 } as const;
 
 export const HERO_SUB = "of the main content is in the raw HTML";
+export const NO_MAIN_TEXT = "The main content has no visible text, so there is nothing to compare.";
 
 export const wordsLine = (n: number): string => (n === 0 ? "Every word of the main content is in the raw HTML" : n === 1 ? "1 word appears only in the rendered HTML" : `${String(n)} words appear only in the rendered HTML`);
 
