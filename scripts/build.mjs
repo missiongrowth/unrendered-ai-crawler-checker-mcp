@@ -24,6 +24,7 @@ await Promise.all([
   cp(`${fonts}/geist-mono/GeistMono-Variable.woff2`, `${out}/fonts/GeistMono-Variable.woff2`),
   // The SIL Open Font License requires the licence to travel with the fonts.
   cp("node_modules/geist/LICENSE.txt", `${out}/fonts/OFL.txt`),
+  cp("LICENSE", `${out}/LICENSE`),
   cp("src/manifest.json", `${out}/manifest.json`),
   ...[16, 32, 48, 128].map((size) => cp(`src/icons/icon-${size}.png`, `${out}/icons/icon-${size}.png`)),
   cp("src/panel/index.html", `${out}/panel.html`),

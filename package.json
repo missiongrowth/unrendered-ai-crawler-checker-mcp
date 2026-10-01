@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "e2e": "playwright test",
-    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm e2e"
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm e2e",
+    "zip": "pnpm build && rm -f store/unrendered-$npm_package_version.zip && cd dist && zip -qrX ../store/unrendered-$npm_package_version.zip ."
   },
   "dependencies": {
     "google-robotstxt-parser": "1.2.0",
