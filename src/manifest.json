@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Unrendered by MissionGrowth",
+  "name": "Unrendered by Mission Growth",
   "short_name": "Unrendered",
   "version": "0.1.0",
   "description": "Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.",

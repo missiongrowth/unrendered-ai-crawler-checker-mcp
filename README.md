@@ -67,6 +67,6 @@ No data collection, no analytics, no storage. See [PRIVACY.md](PRIVACY.md).
 
 ## Licence
 
-The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). The names "Unrendered" and "MissionGrowth" and their icons are not; see [TRADEMARK.md](TRADEMARK.md).
+The code is licensed under the [GNU Affero General Public License v3.0](LICENSE). The names "Unrendered" and "Mission Growth" and their icons are not; see [TRADEMARK.md](TRADEMARK.md).
 
-Made by [MissionGrowth](https://missiongrowth.io).
+Made by [Mission Growth](https://missiongrowth.io).

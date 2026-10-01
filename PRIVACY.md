@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-01
 
-Unrendered is a Chrome extension made by MissionGrowth. It compares a page's raw HTML with its rendered HTML. Everything happens in your browser.
+Unrendered is a Chrome extension made by Mission Growth. It compares a page's raw HTML with its rendered HTML. Everything happens in your browser.
 
 ## What the extension reads
 
@@ -11,7 +11,7 @@ When you click its icon, the extension reads the address and the content of the 
 ## What it does with it
 
 - It compares the two in your browser and shows the result in the side panel.
-- It sends nothing to MissionGrowth or to any other third party. There are no analytics, no telemetry and no accounts.
+- It sends nothing to Mission Growth or to any other third party. There are no analytics, no telemetry and no accounts.
 - It stores nothing. Results exist only while the side panel is open, unless you download or copy them in the Share tab.
 
 ## Which requests it makes

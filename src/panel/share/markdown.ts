@@ -40,6 +40,6 @@ export function markdownReport(report: OkReport, snapshot: Snapshot, product: st
   if (report.jsOnlyLinks.length > 0) lines.push("", `Links only in rendered HTML (${String(report.jsOnlyLinks.length)})`);
   const flagged = notices(report, snapshot);
   if (flagged.length > 0) lines.push("", ...flagged.map((f) => `- ${f}`));
-  lines.push("", `${product} by MissionGrowth (https://missiongrowth.io)`, "");
+  lines.push("", `${product} by Mission Growth (https://missiongrowth.io)`, "");
   return lines.join("\n");
 }

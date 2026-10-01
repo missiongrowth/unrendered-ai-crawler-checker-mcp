@@ -63,7 +63,7 @@ export function ShareView({ report, snapshot, product }: { report: OkReport; sna
         onlyRenderedColor: STATES["js-added"].color,
         missing: topMissing(report, 3).map((b) => clip(b.text, 60)),
         screenshot: shot,
-        footer: `${product} by MissionGrowth`,
+        footer: `${product} by Mission Growth`,
       },
       shot ? { width: shot.naturalWidth, height: shot.naturalHeight } : null,
     );

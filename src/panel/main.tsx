@@ -255,7 +255,7 @@ function App() {
       <footer>
         Free and open source · Made by{" "}
         <a href="https://missiongrowth.io" target="_blank" rel="noreferrer">
-          MissionGrowth
+          Mission Growth
         </a>
       </footer>
     </div>

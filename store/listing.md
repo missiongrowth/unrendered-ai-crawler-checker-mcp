@@ -4,7 +4,7 @@ Fields of the developer dashboard, in its order. Paste the text between the line
 
 ## Store listing
 
-**Name** (from the manifest): Unrendered by MissionGrowth
+**Name** (from the manifest): Unrendered by Mission Growth
 
 **Summary** (from the manifest, 132 characters at most): Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.
 
@@ -46,9 +46,9 @@ Limits
 The extension is not a crawler. Requests come from your browser and your IP, and sites that verify bots by IP may answer the real bot differently. Text inside iframes is not included.
 
 Privacy
-Nothing is sent to MissionGrowth or anyone else. No analytics, no accounts, no storage.
+Nothing is sent to Mission Growth or anyone else. No analytics, no accounts, no storage.
 
-Free and open source under the AGPL-3.0. Made by MissionGrowth.
+Free and open source under the AGPL-3.0. Made by Mission Growth.
 
 ---
 
