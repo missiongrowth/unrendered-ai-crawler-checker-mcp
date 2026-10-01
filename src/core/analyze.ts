@@ -1,7 +1,7 @@
 import { CONFIG } from "../config";
 import type { RawResponse, Snapshot } from "../messages";
 import { align, type BlockState } from "./align";
-import { detectChallenge } from "./challenge";
+import { detectChallenge, type Challenge } from "./challenge";
 import { scriptData } from "./data";
 import { readFields, type JsonLdNode, type PageFields } from "./fields";
 import { tokenize } from "./normalize";
@@ -36,7 +36,7 @@ export interface FieldDiff {
 export type GateFailure =
   | { kind: "fetch-failed"; detail: string }
   | { kind: "http-status"; status: number }
-  | { kind: "challenge"; vendor: string | null; signals: string[] }
+  | { kind: "challenge"; challenge: Challenge; status: number }
   | { kind: "different-url"; finalUrl: string };
 
 export type Report =
@@ -72,8 +72,8 @@ const sameUrl = (a: string, b: string) => {
 
 function gate(url: string, raw: RawResponse): GateFailure | null {
   if (!raw.ok) return { kind: "fetch-failed", detail: raw.error };
-  const challenge = detectChallenge({ status: raw.status, headers: new Headers(raw.headers), body: raw.html });
-  if (challenge.challenged) return { kind: "challenge", vendor: challenge.vendor, signals: challenge.signals };
+  const challenge = detectChallenge(new Headers(raw.headers));
+  if (challenge) return { kind: "challenge", challenge, status: raw.status };
   if (raw.status < 200 || raw.status > 299) return { kind: "http-status", status: raw.status };
   if (!sameUrl(url, raw.url)) return { kind: "different-url", finalUrl: raw.url };
   return null;

@@ -20,10 +20,7 @@ const KNOWN = new Set([
 const PREFIX = /^([^:\s]+)\s*:\s*(.*)$/;
 
 function startsNewItem(piece: string): boolean {
-  const lower = piece.toLowerCase();
-  if (KNOWN.has(lower)) return true;
-  const m = PREFIX.exec(lower);
-  return m !== null;
+  return KNOWN.has(piece.toLowerCase()) || PREFIX.test(piece);
 }
 
 function add(map: Map<string, Set<string>>, token: string, directive: string): void {
@@ -56,7 +53,6 @@ export function parseRobotsDirectives(values: readonly string[]): Map<string, Se
         let arg = (named[2] ?? "").trim();
         if (name === "unavailable_after") {
           while (i + 1 < pieces.length && !startsNewItem(pieces[i + 1] ?? "")) arg += `, ${pieces[++i] ?? ""}`;
-          arg = arg.replace(/\s+/g, " ").trim().toLowerCase();
         }
         if (arg !== "") add(map, token, `${name}:${arg.replace(/\s+/g, " ").toLowerCase()}`);
       } else if (piece !== "") {

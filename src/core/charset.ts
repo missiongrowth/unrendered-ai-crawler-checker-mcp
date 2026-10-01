@@ -1,4 +1,4 @@
-export type CharsetSource = "bom" | "header" | "meta" | "default";
+export type CharsetSource = "bom" | "header" | "meta" | "browser";
 
 export interface DecodedHtml {
   text: string;
@@ -53,10 +53,12 @@ function decode(bytes: Uint8Array, encoding: string, source: CharsetSource): Dec
 /**
  * Character encoding per WHATWG "determining the character encoding":
  * BOM, then the Content-Type charset, then a prescan of the first 1024 bytes for
- * <meta>, then UTF-8. Unknown labels fall through to the next source. A meta
- * declaration of UTF-16 means UTF-8, because the prescan itself read ASCII bytes.
+ * <meta>, then the encoding the browser chose for the live page (the spec leaves
+ * this last step to the implementation). Unknown labels fall through to the next
+ * source. A meta declaration of UTF-16 means UTF-8 and x-user-defined means
+ * windows-1252, as the prescan specifies.
  */
-export function decodeHtml(bytes: Uint8Array, contentType: string | null): DecodedHtml {
+export function decodeHtml(bytes: Uint8Array, contentType: string | null, browserEncoding: string): DecodedHtml {
   const bom = bomEncoding(bytes);
   if (bom !== null) return decode(bytes, bom, "bom");
 
@@ -68,7 +70,8 @@ export function decodeHtml(bytes: Uint8Array, contentType: string | null): Decod
   for (const label of metaCharsets(head)) {
     const enc = resolve(label);
     if (enc === null) continue;
-    return decode(bytes, enc === "utf-16le" || enc === "utf-16be" ? "utf-8" : enc, "meta");
+    const fixed = enc === "utf-16le" || enc === "utf-16be" ? "utf-8" : enc === "x-user-defined" ? "windows-1252" : enc;
+    return decode(bytes, fixed, "meta");
   }
-  return decode(bytes, "utf-8", "default");
+  return decode(bytes, resolve(browserEncoding) ?? "utf-8", "browser");
 }
