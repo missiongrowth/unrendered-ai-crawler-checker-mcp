@@ -38,6 +38,12 @@ export interface Snapshot {
   raw: { first: RawResponse; second: RawResponse; withCookies: RawResponse };
 }
 
+/** Service worker → panel (`chrome.runtime.sendMessage`) after a toolbar click granted activeTab for `tabId`. */
+export interface AnalyseMessage {
+  type: "analyse";
+  tabId: number;
+}
+
 /** Port names. The panel opens both; closing the panel disconnects them. */
 export const CONTENT_PORT = "content";
 export const PROBE_PORT = "probe";
