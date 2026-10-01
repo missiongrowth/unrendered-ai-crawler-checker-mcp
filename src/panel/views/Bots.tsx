@@ -184,7 +184,7 @@ export function BotsView({ run, onRun, product, host }: { run: BotRun; onRun: ()
           <Signals report={run.report} />
         </>
       )}
-      <p class="muted">User-agents copied from vendor pages on {BOTS_CHECKED}.</p>
+      <p class="muted">User-agents checked on {BOTS_CHECKED}.</p>
     </>
   );
 }
