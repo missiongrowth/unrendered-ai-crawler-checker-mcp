@@ -142,7 +142,9 @@ function fieldDiffs(server: PageFields, rendered: PageFields): FieldDiff[] {
   ];
   const metaNames = new Set([...Object.keys(server.robotsMeta), ...Object.keys(rendered.robotsMeta)]);
   for (const name of metaNames) out.push(diffValues(`meta ${name}`, server.robotsMeta[name] ?? [], rendered.robotsMeta[name] ?? []));
-  out.push(diffValues("JSON-LD invalid blocks", server.jsonLdInvalid ? [String(server.jsonLdInvalid)] : [], rendered.jsonLdInvalid ? [String(rendered.jsonLdInvalid)] : []));
+  if (server.jsonLdInvalid > 0 || rendered.jsonLdInvalid > 0) {
+    out.push(diffValues("Invalid JSON-LD blocks", [String(server.jsonLdInvalid)], [String(rendered.jsonLdInvalid)]));
+  }
   return [...out, ...jsonLdDiffs(server.jsonLd, rendered.jsonLd)];
 }
 
