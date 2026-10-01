@@ -4,8 +4,10 @@ export interface Bot {
   /** robots.txt product token. */
   token: string;
   vendor: string;
-  /** Verbatim from the vendor page; null when the vendor publishes a token only, or when the bot is not probed (Googlebot, Applebot). */
+  /** Verbatim from the vendor page or from verified traffic (see `userAgentSeen`); null when not probed. */
   userAgent: string | null;
+  /** Set when the vendor publishes a token only and the string comes from requests made from the vendor's published IP ranges. */
+  userAgentSeen?: { date: string; ipList: string };
   docUrl: string;
   class: BotClass;
   /** Verbatim vendor sentence on robots.txt, when the page has one for this token. */
@@ -28,6 +30,8 @@ export const BOTS_CHECKED = "2026-10-01";
 
 const OPENAI = "https://developers.openai.com/api/docs/bots";
 const ANTHROPIC = "https://support.claude.com/en/articles/8896518";
+/** Seen on missiongrowth.io from 216.73.216.0/22 and 34.162.191.81, both in Anthropic's published list. */
+const ANTHROPIC_SEEN = { date: "2026-10-01", ipList: "https://claude.com/crawling/bots.json" };
 const ANTHROPIC_NOTE = "Anthropic’s Bots respect “do not crawl” signals by honoring industry standard directives in robots.txt.";
 const PERPLEXITY = "https://docs.perplexity.ai/docs/resources/perplexity-crawlers";
 const GOOGLE = "https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers";
@@ -55,9 +59,9 @@ export const BOTS: readonly Bot[] = [
     robotsNote: "Because these actions are initiated by a user, robots.txt rules may not apply.",
     rendersJs: false,
   },
-  { token: "ClaudeBot", vendor: "Anthropic", docUrl: ANTHROPIC, class: "training", userAgent: null, robotsNote: ANTHROPIC_NOTE, rendersJs: false },
+  { token: "ClaudeBot", vendor: "Anthropic", docUrl: ANTHROPIC, class: "training", userAgentSeen: ANTHROPIC_SEEN, userAgent: "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)", robotsNote: ANTHROPIC_NOTE, rendersJs: false },
   { token: "Claude-SearchBot", vendor: "Anthropic", docUrl: ANTHROPIC, class: "search", userAgent: null, robotsNote: ANTHROPIC_NOTE, rendersJs: null },
-  { token: "Claude-User", vendor: "Anthropic", docUrl: ANTHROPIC, class: "user-fetch", userAgent: null, robotsNote: ANTHROPIC_NOTE, rendersJs: null },
+  { token: "Claude-User", vendor: "Anthropic", docUrl: ANTHROPIC, class: "user-fetch", userAgentSeen: ANTHROPIC_SEEN, userAgent: "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Claude-User/1.0; +claude-user@anthropic.com)", robotsNote: ANTHROPIC_NOTE, rendersJs: null },
   {
     token: "PerplexityBot", vendor: "Perplexity", docUrl: PERPLEXITY, class: "search",
     userAgent: "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)",

@@ -96,6 +96,8 @@ export const MIXED_VERDICTS: Record<string, string> = {
   "ChatGPT-User": "different",
   PerplexityBot: "rate-limited",
   "Perplexity-User": "redirected-elsewhere",
+  ClaudeBot: "same",
+  "Claude-User": "same",
   "Meta-ExternalAgent": "same",
   "Meta-ExternalFetcher": "error",
   Amazonbot: "same",

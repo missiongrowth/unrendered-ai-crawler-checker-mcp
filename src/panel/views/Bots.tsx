@@ -63,7 +63,9 @@ function ResponseBadge({ verdict }: { verdict: ProbeVerdict | null }) {
 }
 
 function untested(bot: Bot, product: string): string {
-  return NOT_IMITATED.has(bot.token) ? `Not tested: ${product} does not imitate ${bot.token}.` : `Not tested: ${bot.vendor} publishes no user-agent string.`;
+  if (NOT_IMITATED.has(bot.token)) return `Not tested: ${product} does not imitate ${bot.token}.`;
+  if (bot.class === "control-token") return "Not tested: this token only controls how crawled data is used. It never fetches pages.";
+  return "Not tested: no verified user-agent string yet.";
 }
 
 function jsLine(bot: Bot): string {
@@ -98,6 +100,12 @@ function BotLine({ row, fetched, product }: { row: BotRow; fetched: RobotsFetch;
           <>
             <p>User-agent sent:</p>
             <code class="line">{bot.userAgent}</code>
+            {bot.userAgentSeen && (
+              <p class="muted">
+                {bot.vendor} publishes the token only. This string was seen in server logs on {bot.userAgentSeen.date}, from IP ranges in{" "}
+                <ExternalLink href={bot.userAgentSeen.ipList}>{bot.vendor}'s published list</ExternalLink>.
+              </p>
+            )}
           </>
         )}
         <p>{jsLine(bot)}</p>
