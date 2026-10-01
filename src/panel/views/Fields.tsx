@@ -1,15 +1,10 @@
 import { useState } from "preact/hooks";
-import type { FieldDiff, FieldState } from "../../core/analyze";
+import type { FieldDiff } from "../../core/analyze";
 import { isNoindex, parseRobotsDirectives } from "../../core/xrobots";
-import type { OkReport } from "../metrics";
-
-const LABELS: Record<FieldState, string> = {
-  same: "Same",
-  changed: "Changed by JavaScript",
-  "added-by-js": "Added by JavaScript",
-  "removed-by-js": "Removed by JavaScript",
-  absent: "Absent",
-};
+import { FIELD_LABEL } from "../copy";
+import { IconAlertTriangle, IconChevronRight } from "../icons";
+import { differs, type OkReport } from "../metrics";
+import { Badge, Disclosure, ExternalLink } from "./ui";
 
 // Quoted verbatim from the page below (checked 2026-10-01).
 const GOOGLE_URL = "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics";
@@ -24,109 +19,104 @@ function removedNoindex(fields: readonly FieldDiff[]): FieldDiff | undefined {
   return fields.find((f) => f.field.startsWith("meta ") && hasNoindex(f.server) && !hasNoindex(f.rendered));
 }
 
-function Values({ values }: { values: string[] }) {
-  if (values.length === 0) return <span class="muted">none</span>;
+function Values({ label, values }: { label: string; values: string[] }) {
   return (
-    <ul class="values">
-      {values.map((v, i) => (
-        <li key={i}>{v}</li>
-      ))}
-    </ul>
+    <div class="values">
+      <span class="values-label">{label}</span>
+      {values.length === 0 ? (
+        <span class="muted">Not set</span>
+      ) : (
+        <ul>
+          {values.map((v, i) => (
+            <li key={i}>{v}</li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
 function FieldRow({ diff }: { diff: FieldDiff }) {
   return (
-    <tr data-field={diff.field} data-field-state={diff.state}>
-      <th scope="row">{diff.field}</th>
-      <td>
-        <span class="pill" data-pill={diff.state}>
-          {LABELS[diff.state]}
-        </span>
-      </td>
-      <td>
-        <Values values={diff.server} />
-      </td>
-      <td>
-        <Values values={diff.rendered} />
-      </td>
-    </tr>
+    <details class="field-row" data-field={diff.field} data-field-state={diff.state}>
+      <summary class="hover-row">
+        <IconChevronRight />
+        <span class="field-name">{diff.field}</span>
+        <Badge tone="plain" pill={diff.state}>
+          {FIELD_LABEL[diff.state]}
+        </Badge>
+      </summary>
+      <div class="field-values">
+        <Values label="Raw HTML" values={diff.server} />
+        <Values label="Rendered HTML" values={diff.rendered} />
+      </div>
+    </details>
   );
 }
 
 export function FieldsView({ report }: { report: OkReport }) {
-  const [showAbsent, setShowAbsent] = useState(false);
-  const rows = report.fields.filter((f) => showAbsent || f.state !== "absent");
+  const [showUnchanged, setShowUnchanged] = useState(false);
+  const unchanged = report.fields.filter((f) => !differs(f));
+  const rows = report.fields.filter((f) => showUnchanged || differs(f));
   const noindex = removedNoindex(report.fields);
+  const links = report.jsOnlyLinks;
   return (
     <>
       {noindex && (
         <section class="callout" role="note">
-          <p>
-            <strong>{noindex.field}</strong> has noindex in the server HTML, and the rendered page no longer has it.
+          <p class="callout-title">
+            <IconAlertTriangle />
+            noindex is only in the raw HTML
           </p>
-          <blockquote>“{GOOGLE_QUOTE}”</blockquote>
-          <p class="muted">
-            Google Search Central:{" "}
-            <a href={GOOGLE_URL} target="_blank" rel="noreferrer">
-              Understand the JavaScript SEO basics
-            </a>
-          </p>
+          <p>{noindex.field} says noindex in the raw HTML, and JavaScript removes it. Google says:</p>
+          <blockquote>{GOOGLE_QUOTE}</blockquote>
+          <ExternalLink href={GOOGLE_URL}>Google Search Central: JavaScript SEO basics</ExternalLink>
         </section>
       )}
       <section>
-        <div class="toolbar">
-          <h2>Head fields and structured data</h2>
-          <label class="toggle">
-            <input
-              type="checkbox"
-              checked={showAbsent}
-              onChange={(e) => {
-                setShowAbsent(e.currentTarget.checked);
+        <div class="section-head">
+          <h2>Head and structured data</h2>
+          {unchanged.length > 0 && (
+            <button
+              type="button"
+              class="btn small"
+              aria-pressed={showUnchanged}
+              onClick={() => {
+                setShowUnchanged(!showUnchanged);
               }}
-            />
-            Show absent
-          </label>
+            >
+              Show unchanged ({unchanged.length})
+            </button>
+          )}
         </div>
-        <table class="fields">
-          <thead>
-            <tr>
-              <th scope="col">Field</th>
-              <th scope="col">State</th>
-              <th scope="col">Server HTML</th>
-              <th scope="col">Rendered</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((d, i) => (
-              <FieldRow key={i} diff={d} />
-            ))}
-          </tbody>
-        </table>
-      </section>
-      <section>
-        <h2>Links only in the rendered page ({report.jsOnlyLinks.length})</h2>
-        <p class="muted">These links are not in the server HTML, so they are not found without running JavaScript.</p>
-        <ul class="links">
-          {report.jsOnlyLinks.slice(0, LINK_LIMIT).map((l) => (
-            <li key={l}>{l}</li>
+        {report.fields.every((f) => !differs(f)) && <p class="muted">Every field is the same in the raw and rendered HTML.</p>}
+        <div class="rows">
+          {rows.map((d, i) => (
+            <FieldRow key={i} diff={d} />
           ))}
-        </ul>
-        {report.jsOnlyLinks.length > LINK_LIMIT && <p class="muted">and {report.jsOnlyLinks.length - LINK_LIMIT} more</p>}
+        </div>
       </section>
-      <section>
-        <h2>Server response headers</h2>
-        <table class="fields">
-          <tbody>
-            {Object.entries(report.serverHeaders).map(([k, v]) => (
-              <tr key={k}>
-                <th scope="row">{k}</th>
-                <td>{v}</td>
-              </tr>
+      {links.length > 0 && (
+        <Disclosure title={`Links only in rendered HTML (${String(links.length)})`}>
+          <p class="muted">Crawlers that don't run JavaScript can't find these links.</p>
+          <ul class="links">
+            {links.slice(0, LINK_LIMIT).map((l) => (
+              <li key={l}>{l}</li>
             ))}
-          </tbody>
-        </table>
-      </section>
+          </ul>
+          {links.length > LINK_LIMIT && <p class="muted">and {links.length - LINK_LIMIT} more</p>}
+        </Disclosure>
+      )}
+      <Disclosure title="Raw HTML response headers">
+        <dl class="headers">
+          {Object.entries(report.serverHeaders).map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </Disclosure>
     </>
   );
 }

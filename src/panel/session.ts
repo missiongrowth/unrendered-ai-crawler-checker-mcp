@@ -7,7 +7,7 @@ export type Phase =
   | { status: "loading"; step: string }
   | { status: "analysed"; tabId: number; snapshot: Snapshot; report: Report }
   | { status: "no-access" }
-  | { status: "unsupported"; reason: string }
+  | { status: "unsupported" }
   | { status: "error"; message: string };
 
 type Outcome = Exclude<Phase, { status: "idle" | "loading" }>;
@@ -59,7 +59,7 @@ export async function analyseTab(tabId: number, onStep: (step: string) => void):
     if (tab.url === undefined) return { status: "no-access" };
     const { protocol } = new URL(tab.url);
     if (protocol !== "http:" && protocol !== "https:") {
-      return { status: "unsupported", reason: `Pages that use ${protocol} cannot be analysed; only http: and https: pages can.` };
+      return { status: "unsupported" };
     }
     try {
       await chrome.scripting.executeScript({ target: { tabId }, files: ["content.js"] });
@@ -70,7 +70,7 @@ export async function analyseTab(tabId: number, onStep: (step: string) => void):
     const reply = await requestSnapshot(tabId);
     if (superseded()) return null;
     if (reply.type === "snapshot-error") return { status: "error", message: reply.error };
-    onStep("Comparing…");
+    onStep("Comparing raw and rendered HTML…");
     await new Promise<void>((resolve) => {
       setTimeout(resolve, 0);
     });

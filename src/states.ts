@@ -1,6 +1,7 @@
 import type { BlockState } from "./core/align";
 
 export interface StateMeta {
+  /** Short label for chips and legends. */
   label: string;
   /** Okabe-Ito palette, distinguishable with common colour-vision deficiencies. */
   color: string;
@@ -11,45 +12,45 @@ export interface StateMeta {
 
 export const STATES: Record<BlockState, StateMeta> = {
   server: {
-    label: "In server HTML",
+    label: "In raw HTML",
     color: "#009E73",
     border: "solid",
-    description: "The whole text is in the server HTML, in page order.",
+    description: "This text is in the raw HTML.",
   },
   partial: {
-    label: "Partly in server HTML",
+    label: "Partly",
     color: "#E69F00",
     border: "dashed",
-    description: "Only part of the text is in the server HTML; JavaScript changed or completed it.",
+    description: "Part of this text is in the raw HTML. JavaScript adds or changes the rest.",
   },
   ambiguous: {
-    label: "Repeated text",
+    label: "Repeated or moved",
     color: "#0072B2",
     border: "dotted",
-    description: "The text is in the server HTML, but every copy there is already matched to another block.",
+    description: "The same text is in the raw HTML, but not at this position. It is an extra copy or JavaScript moved it.",
   },
   volatile: {
-    label: "Changes per request",
+    label: "Varies per request",
     color: "#F0E442",
     border: "dashed",
-    description: "Only the second server response had this text, so it varies between requests.",
+    description: "Only one of two raw HTML requests had this text. The server does not always send it.",
   },
   "structured-data": {
     label: "Only in JSON-LD",
     color: "#56B4E9",
     border: "double",
-    description: "The server HTML has this text only inside JSON-LD structured data, not as page text.",
+    description: "In the raw HTML this text exists only inside JSON-LD structured data, not as visible text.",
   },
   "hydration-data": {
     label: "Only in hydration data",
     color: "#CC79A7",
     border: "double",
-    description: "The server HTML has this text only inside framework hydration data, not as page text.",
+    description: "In the raw HTML this text exists only inside framework data (such as Next.js __NEXT_DATA__ or the RSC payload), not as visible text.",
   },
   "js-added": {
-    label: "Added by JavaScript",
+    label: "Only in rendered HTML",
     color: "#D55E00",
     border: "solid",
-    description: "The server HTML does not have this text; it appears only after JavaScript runs.",
+    description: "This text is not in the raw HTML. It appears only after JavaScript runs.",
   },
 };

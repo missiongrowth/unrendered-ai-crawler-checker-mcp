@@ -1,10 +1,11 @@
 import { botReport, type BotReport } from "../core/botcheck";
 import { BOTS } from "../data/bots";
-import { PROBE_PORT, type ProbeReply, type ProbeRequest, type Snapshot } from "../messages";
+import { PROBE_PORT, type ProbeAgent, type ProbeReply, type ProbeRequest, type Snapshot } from "../messages";
 
 export type BotRun =
   | { status: "idle" }
   | { status: "running" }
+  | { status: "denied"; host: string }
   | { status: "done"; report: BotReport }
   | { status: "error"; message: string };
 
@@ -18,6 +19,8 @@ export function originsFor(url: string): { origins: string[]; hosts: string[] } 
   const hosts = twin === null ? [hostname] : [hostname, twin];
   return { origins: hosts.map((h) => `${protocol}//${h}/*`), hosts };
 }
+
+export const probedAgents = (): ProbeAgent[] => BOTS.flatMap((b) => (b.userAgent === null ? [] : [{ token: b.token, userAgent: b.userAgent }]));
 
 function probe(request: ProbeRequest): Promise<ProbeResult> {
   return new Promise((resolve, reject) => {
@@ -34,12 +37,20 @@ function probe(request: ProbeRequest): Promise<ProbeResult> {
   });
 }
 
+export class AccessDenied extends Error {
+  readonly host: string;
+  constructor(host: string) {
+    super(`Access to ${host} was not allowed.`);
+    this.host = host;
+  }
+}
+
 /** Must be called synchronously from the click handler: the permission request needs the user gesture. */
 export async function runBotCheck(snapshot: Snapshot): Promise<BotReport> {
   const { origins, hosts } = originsFor(snapshot.url);
   const granted = await chrome.permissions.request({ origins });
-  if (!granted) throw new Error("Access to this site was not granted. The bot check needs it to fetch the page with each bot's user-agent.");
-  const agents = BOTS.flatMap((b) => (b.userAgent === null ? [] : [{ token: b.token, userAgent: b.userAgent }]));
+  if (!granted) throw new AccessDenied(new URL(snapshot.url).host);
+  const agents = probedAgents();
   const reply = await probe({ type: "probe", url: snapshot.url, hosts, agents, characterSet: snapshot.characterSet });
   return botReport(reply, snapshot.url);
 }

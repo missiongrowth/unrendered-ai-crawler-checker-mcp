@@ -2,11 +2,25 @@
   "manifest_version": 3,
   "name": "xray",
   "version": "0.1.0",
-  "description": "Compare the server HTML that non-JavaScript AI crawlers receive with the page your browser renders.",
+  "description": "Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.",
   "minimum_chrome_version": "124",
-  "permissions": ["activeTab", "scripting", "sidePanel", "declarativeNetRequestWithHostAccess"],
-  "optional_host_permissions": ["https://*/*", "http://*/*"],
-  "background": { "service_worker": "background.js" },
-  "action": { "default_title": "Compare server HTML with the rendered page" },
-  "side_panel": { "default_path": "panel.html" }
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Compare raw and rendered HTML"
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  }
 }

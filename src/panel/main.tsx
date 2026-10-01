@@ -1,19 +1,18 @@
 import { render } from "preact";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import type { ComponentChildren } from "preact";
-import { runBotCheck, type BotRun } from "./botrun";
-import { stripHash, type OkReport } from "./metrics";
+import { AccessDenied, runBotCheck, type BotRun } from "./botrun";
+import { IconRefresh } from "./icons";
+import { differsCount, stripHash, type OkReport } from "./metrics";
 import { analyseTab, disconnectContent, isAnalyseMessage, type Phase } from "./session";
 import { BotsView } from "./views/Bots";
 import { FieldsView } from "./views/Fields";
 import { ShareView } from "./views/Share";
-import { Gate, XRayView } from "./views/XRay";
+import { ContentView, Gate } from "./views/Content";
 import type { Snapshot } from "../messages";
 
-const PURPOSE = "Show what an AI crawler that does not run JavaScript receives from this page, compared with what the browser renders.";
-
 const TABS = [
-  { id: "xray", label: "X-Ray" },
+  { id: "content", label: "Content" },
   { id: "fields", label: "Fields" },
   { id: "bots", label: "Bots" },
   { id: "share", label: "Share" },
@@ -26,30 +25,68 @@ function dataStatus(phase: Phase): string {
   return phase.report.ok ? "ready" : "gate";
 }
 
-function StatusMessage({ phase }: { phase: Exclude<Phase, { status: "analysed" }> }) {
+function StatusMessage({ phase, product, onRetry }: { phase: Exclude<Phase, { status: "analysed" }>; product: string; onRetry: () => void }) {
   switch (phase.status) {
     case "loading":
       return (
         <p class="progress" role="status">
+          <span class="spinner" aria-hidden="true" />
           {phase.step}
         </p>
       );
-    case "no-access":
-      return <p class="empty">Click the toolbar icon to analyse this tab</p>;
     case "unsupported":
-      return <p class="empty">{phase.reason}</p>;
+      return (
+        <section class="empty">
+          <h2>This page can't be analysed</h2>
+          <p>{product} works on http and https pages only.</p>
+        </section>
+      );
     case "error":
       return (
-        <p class="error" role="alert">
-          Analysis failed: {phase.message}
-        </p>
+        <section class="empty" role="alert">
+          <h2>Analysis failed</h2>
+          <p>{phase.message}</p>
+          <button type="button" class="btn" onClick={onRetry}>
+            Try again
+          </button>
+        </section>
       );
+    case "no-access":
     case "idle":
-      return <p class="empty">Click the toolbar icon to analyse this tab</p>;
+      return (
+        <section class="empty">
+          <h2>Click the {product} icon to analyse this tab</h2>
+          <p>The extension reads a tab only after you click its icon.</p>
+        </section>
+      );
   }
 }
 
-function Tabs({ active, onSelect }: { active: TabId; onSelect: (t: TabId) => void }) {
+const TAIL = 12;
+
+/** CSS can only cut the end of a string, so the last characters live in their own span. */
+function MiddleTruncate({ text }: { text: string }) {
+  const head = text.length > TAIL ? text.slice(0, -TAIL) : text;
+  const tail = text.length > TAIL ? text.slice(-TAIL) : "";
+  return (
+    <span class="middle" title={text}>
+      <span class="middle-head">{head}</span>
+      <span class="middle-tail">{tail}</span>
+    </span>
+  );
+}
+
+function hostAndPath(url: string): string {
+  const { host, pathname } = new URL(url);
+  return `${host}${pathname}`;
+}
+
+function statusLine(report: OkReport, snapshot: Snapshot): string {
+  const seconds = (snapshot.settleMs / 1000).toFixed(1);
+  return `HTTP ${String(report.status)} · ${snapshot.settled ? "settled in" : "still changing at"} ${seconds} s`;
+}
+
+function Tabs({ active, onSelect, fieldCount }: { active: TabId; onSelect: (t: TabId) => void; fieldCount: number | null }) {
   const onKeyDown = (e: KeyboardEvent, index: number) => {
     const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     const target = e.key === "Home" ? 0 : e.key === "End" ? TABS.length - 1 : (index + step + TABS.length) % TABS.length;
@@ -77,8 +114,14 @@ function Tabs({ active, onSelect }: { active: TabId; onSelect: (t: TabId) => voi
           onKeyDown={(e) => {
             onKeyDown(e, i);
           }}
+          aria-label={t.label}
         >
           {t.label}
+          {t.id === "fields" && fieldCount !== null && fieldCount > 0 && (
+            <span class="count-badge num" aria-hidden="true">
+              {fieldCount}
+            </span>
+          )}
         </button>
       ))}
     </div>
@@ -95,7 +138,7 @@ function Panel({ id, active, children }: { id: TabId; active: TabId; children: C
 
 function App() {
   const [phase, setPhase] = useState<Phase>({ status: "idle" });
-  const [tab, setTab] = useState<TabId>("xray");
+  const [tab, setTab] = useState<TabId>("content");
   const [liveUrl, setLiveUrl] = useState<string | null>(null);
   const [bots, setBots] = useState<BotRun>({ status: "idle" });
   const tracked = useRef<number | null>(null);
@@ -105,19 +148,27 @@ function App() {
     tracked.current = tabId;
     setLiveUrl(null);
     setBots({ status: "idle" });
-    setPhase({ status: "loading", step: "Fetching server HTML…" });
+    setPhase({ status: "loading", step: "Waiting for the page to settle…" });
     const outcome = await analyseTab(tabId, (step) => {
       setPhase({ status: "loading", step });
     });
     if (outcome) setPhase(outcome);
   }, []);
 
-  useEffect(() => {
-    document.title = manifest.name;
+  const rerun = useCallback(() => {
+    if (tracked.current !== null) {
+      void run(tracked.current);
+      return;
+    }
     void chrome.tabs.query({ active: true, lastFocusedWindow: true }).then(([active]) => {
       if (active?.id === undefined) setPhase({ status: "no-access" });
       else void run(active.id);
     });
+  }, [run]);
+
+  useEffect(() => {
+    document.title = manifest.name;
+    rerun();
     const onMessage = (message: unknown) => {
       if (isAnalyseMessage(message)) void run(message.tabId);
     };
@@ -139,13 +190,14 @@ function App() {
       chrome.tabs.onActivated.removeListener(onActivated);
       chrome.tabs.onUpdated.removeListener(onUpdated);
     };
-  }, [run, manifest.name]);
+  }, [run, rerun, manifest.name]);
 
   const analysed = phase.status === "analysed" ? phase : null;
   const ok: { report: OkReport; snapshot: Snapshot } | null = analysed?.report.ok ? { report: analysed.report, snapshot: analysed.snapshot } : null;
   const changed = analysed !== null && liveUrl !== null && stripHash(liveUrl) !== stripHash(analysed.snapshot.url) ? analysed : null;
-  const unavailable = phase.status === "analysed" ? null : <StatusMessage phase={phase} />;
-  const needsOk = (view: ComponentChildren) => unavailable ?? (ok ? view : <p class="empty">No comparison is available; see the X-Ray tab.</p>);
+  const unavailable = analysed ? null : <StatusMessage phase={phase as Exclude<Phase, { status: "analysed" }>} product={manifest.name} onRetry={rerun} />;
+  const gated = analysed && !analysed.report.ok ? <Gate failure={analysed.report.gate} /> : null;
+  const needsOk = (view: ComponentChildren) => unavailable ?? (ok ? view : gated);
 
   const startBotCheck = () => {
     if (!analysed) return;
@@ -155,7 +207,7 @@ function App() {
         setBots({ status: "done", report });
       },
       (e: unknown) => {
-        setBots({ status: "error", message: e instanceof Error ? e.message : String(e) });
+        setBots(e instanceof AccessDenied ? { status: "denied", host: e.host } : { status: "error", message: e instanceof Error ? e.message : String(e) });
       },
     );
   };
@@ -163,39 +215,44 @@ function App() {
   return (
     <div id="app" data-status={dataStatus(phase)}>
       <header class="top">
-        <h1>{manifest.name}</h1>
-        <p class="purpose">{PURPOSE}</p>
+        <div class="top-text">
+          <h1>{manifest.name}</h1>
+          {analysed && (
+            <p class="page-url">
+              <MiddleTruncate text={hostAndPath(analysed.snapshot.url)} />
+            </p>
+          )}
+          {ok && <p class="status-line num">{statusLine(ok.report, ok.snapshot)}</p>}
+        </div>
+        <button type="button" class="icon-btn hover-row" aria-label="Analyse again" title="Analyse again" disabled={phase.status === "loading"} onClick={rerun}>
+          <IconRefresh />
+        </button>
       </header>
-      <Tabs active={tab} onSelect={setTab} />
+      <Tabs active={tab} onSelect={setTab} fieldCount={ok ? differsCount(ok.report) : null} />
       {changed && (
         <div class="stale" role="status">
-          <span>Page changed since analysis</span>
-          <button
-            type="button"
-            onClick={() => {
-              void run(changed.tabId);
-            }}
-          >
-            Re-analyse
+          <span>The page changed since the analysis.</span>
+          <button type="button" class="btn small" onClick={rerun}>
+            Analyse again
           </button>
         </div>
       )}
       <main>
-        <Panel id="xray" active={tab}>
-          {unavailable ?? (ok ? <XRayView report={ok.report} snapshot={ok.snapshot} /> : analysed && !analysed.report.ok ? <Gate failure={analysed.report.gate} /> : null)}
+        <Panel id="content" active={tab}>
+          {unavailable ?? (ok ? <ContentView report={ok.report} snapshot={ok.snapshot} /> : gated)}
         </Panel>
         <Panel id="fields" active={tab}>
           {needsOk(ok && <FieldsView report={ok.report} />)}
         </Panel>
         <Panel id="bots" active={tab}>
-          {unavailable ?? <BotsView run={bots} onRun={startBotCheck} />}
+          {unavailable ?? (analysed && <BotsView run={bots} onRun={startBotCheck} product={manifest.name} host={new URL(analysed.snapshot.url).host} />)}
         </Panel>
         <Panel id="share" active={tab}>
-          {needsOk(ok && <ShareView report={ok.report} snapshot={ok.snapshot} product={manifest.name} version={manifest.version} />)}
+          {needsOk(ok && <ShareView report={ok.report} snapshot={ok.snapshot} product={manifest.name} />)}
         </Panel>
       </main>
       <footer>
-        {manifest.name} · Free &amp; open source ·{" "}
+        Free and open source · Made by{" "}
         <a href="https://missiongrowth.io" target="_blank" rel="noreferrer">
           MissionGrowth
         </a>
