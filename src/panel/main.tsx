@@ -143,6 +143,7 @@ function App() {
   const [bots, setBots] = useState<BotRun>({ status: "idle" });
   const tracked = useRef<number | null>(null);
   const manifest = chrome.runtime.getManifest();
+  const product = manifest.short_name ?? manifest.name;
 
   const run = useCallback(async (tabId: number) => {
     tracked.current = tabId;
@@ -167,7 +168,7 @@ function App() {
   }, [run]);
 
   useEffect(() => {
-    document.title = manifest.name;
+    document.title = product;
     rerun();
     const onMessage = (message: unknown) => {
       if (isAnalyseMessage(message)) void run(message.tabId);
@@ -190,12 +191,12 @@ function App() {
       chrome.tabs.onActivated.removeListener(onActivated);
       chrome.tabs.onUpdated.removeListener(onUpdated);
     };
-  }, [run, rerun, manifest.name]);
+  }, [run, rerun, product]);
 
   const analysed = phase.status === "analysed" ? phase : null;
   const ok: { report: OkReport; snapshot: Snapshot } | null = analysed?.report.ok ? { report: analysed.report, snapshot: analysed.snapshot } : null;
   const changed = analysed !== null && liveUrl !== null && stripHash(liveUrl) !== stripHash(analysed.snapshot.url) ? analysed : null;
-  const unavailable = analysed ? null : <StatusMessage phase={phase as Exclude<Phase, { status: "analysed" }>} product={manifest.name} onRetry={rerun} />;
+  const unavailable = phase.status === "analysed" ? null : <StatusMessage phase={phase} product={product} onRetry={rerun} />;
   const gated = analysed && !analysed.report.ok ? <Gate failure={analysed.report.gate} /> : null;
   const needsOk = (view: ComponentChildren) => unavailable ?? (ok ? view : gated);
 
@@ -216,7 +217,7 @@ function App() {
     <div id="app" data-status={dataStatus(phase)}>
       <header class="top">
         <div class="top-text">
-          <h1>{manifest.name}</h1>
+          <h1>{product}</h1>
           {analysed && (
             <p class="page-url">
               <MiddleTruncate text={hostAndPath(analysed.snapshot.url)} />
@@ -245,10 +246,10 @@ function App() {
           {needsOk(ok && <FieldsView report={ok.report} />)}
         </Panel>
         <Panel id="bots" active={tab}>
-          {unavailable ?? (analysed && <BotsView run={bots} onRun={startBotCheck} product={manifest.name} host={new URL(analysed.snapshot.url).host} />)}
+          {unavailable ?? (analysed && <BotsView run={bots} onRun={startBotCheck} product={product} host={new URL(analysed.snapshot.url).host} />)}
         </Panel>
         <Panel id="share" active={tab}>
-          {needsOk(ok && <ShareView report={ok.report} snapshot={ok.snapshot} product={manifest.name} />)}
+          {needsOk(ok && <ShareView report={ok.report} snapshot={ok.snapshot} product={product} />)}
         </Panel>
       </main>
       <footer>

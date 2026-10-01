@@ -4,7 +4,7 @@ import { clearOverlay, reveal, setOverlay } from "./overlay";
 import { takeSnapshot } from "./snapshot";
 import type { BlockIndex } from "./snapshot";
 
-const INSTALLED = "__xrayContentInstalled";
+const INSTALLED = "__unrenderedContentInstalled";
 
 function install(): void {
   chrome.runtime.onConnect.addListener((port) => {

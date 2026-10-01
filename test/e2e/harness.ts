@@ -53,7 +53,7 @@ async function debuggingPort(profile: string): Promise<number> {
 }
 
 export async function launchExtension(extensionDir: string): Promise<Extension> {
-  const profile = mkdtempSync(join(tmpdir(), "xray-profile-"));
+  const profile = mkdtempSync(join(tmpdir(), "unrendered-profile-"));
   const ctx = await chromium.launchPersistentContext(profile, {
     channel: "chromium",
     headless: true,
@@ -85,7 +85,7 @@ export async function launchExtension(extensionDir: string): Promise<Extension> 
  * then resolves without the native prompt, which automation cannot click.
  */
 export function buildHostAccessCopy(): string {
-  const dir = mkdtempSync(join(tmpdir(), "xray-hostaccess-"));
+  const dir = mkdtempSync(join(tmpdir(), "unrendered-hostaccess-"));
   cpSync(DIST, dir, { recursive: true });
   const manifest = JSON.parse(readFileSync(join(DIST, "manifest.json"), "utf8")) as Record<string, unknown>;
   delete manifest["optional_host_permissions"];
