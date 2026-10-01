@@ -1,0 +1,35 @@
+{
+  "name": "unrendered-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that compares a page's raw HTML with its rendered DOM, using the Unrendered extension's own analysis code.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "bin": {
+    "unrendered-mcp": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "parity": "node scripts/parity.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "playwright-core": "1.63.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/chrome": "0.3.4",
+    "@types/node": "^24.0.0",
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3"
+  }
+}

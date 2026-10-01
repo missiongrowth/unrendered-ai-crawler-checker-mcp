@@ -2,7 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "node_modules", "notes", "test-results", "playwright-report"] },
+  { ignores: ["dist", "mcp/dist", "node_modules", "notes", "test-results", "playwright-report"] },
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {
@@ -19,7 +19,11 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
   },
   {
-    files: ["scripts/**", "test/**", "*.config.ts"],
+    files: ["mcp/scripts/**"],
+    languageOptions: { globals: { console: "readonly", navigator: "readonly", process: "readonly", setTimeout: "readonly", URL: "readonly" } },
+  },
+  {
+    files: ["scripts/**", "mcp/scripts/**", "test/**", "*.config.ts"],
     rules: { "no-console": "off" },
   },
 );

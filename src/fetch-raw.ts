@@ -30,10 +30,16 @@ async function readCapped(res: Response): Promise<{ bytes: Uint8Array; truncated
   return { bytes, truncated };
 }
 
+export interface FetchExtras {
+  /** Merged over the default request headers; a runner outside the browser uses it to set the user-agent. */
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+}
+
 /** One uncached GET for HTML, decoded the way a browser would, capped at `CONFIG.rawMaxBytes`. */
-export async function fetchRaw(url: string, credentials: RequestCredentials, characterSet: string): Promise<RawResponse> {
+export async function fetchRaw(url: string, credentials: RequestCredentials, characterSet: string, extras: FetchExtras = {}): Promise<RawResponse> {
   try {
-    const res = await fetch(url, { credentials, cache: "no-store", headers: { accept: "text/html" } });
+    const res = await fetch(url, { credentials, cache: "no-store", headers: { accept: "text/html", ...extras.headers }, ...(extras.signal && { signal: extras.signal }) });
     const { bytes, truncated } = await readCapped(res);
     const { text, encoding } = decodeHtml(bytes, res.headers.get("content-type"), characterSet);
     return {

@@ -52,9 +52,9 @@ function settle(start: number): Promise<Settled> {
   });
 }
 
-function shadowRootOf(el: Element): ShadowRoot | null {
-  return el instanceof HTMLElement ? (chrome.dom.openOrClosedShadowRoot(el) ?? null) : null;
-}
+export type ShadowRootOf = (el: Element) => ShadowRoot | null;
+
+const openOrClosedShadowRoot: ShadowRootOf = (el) => (el instanceof HTMLElement ? (chrome.dom.openOrClosedShadowRoot(el) ?? null) : null);
 
 /** Parent in the composed tree: slot, then shadow host, then light parent. */
 function composedParent(el: Element): Element | null {
@@ -83,7 +83,7 @@ function isHidden(el: Element): boolean {
   return rect.width === 0 || rect.height === 0;
 }
 
-function collectBlocks(): { blocks: RenderedBlock[]; index: BlockIndex } {
+function collectBlocks(shadowRootOf: ShadowRootOf): { blocks: RenderedBlock[]; index: BlockIndex } {
   const index: BlockIndex = { all: new Map(), visible: new Map() };
   const blocks = segment(document.body, { shadowRootOf, includeNoscript: false }).map((seg, id): RenderedBlock => {
     const hidden = isHidden(seg.el);
@@ -94,8 +94,11 @@ function collectBlocks(): { blocks: RenderedBlock[]; index: BlockIndex } {
   return { blocks, index };
 }
 
-/** Rendered snapshot of this document plus the three raw fetches, started together with the settle wait. */
-export async function takeSnapshot(crawlerTokens: readonly string[]): Promise<SnapshotResult> {
+/**
+ * Rendered snapshot of this document plus the three raw fetches, started together with the settle wait.
+ * `shadowRootOf` defaults to the extension API, which also reaches closed shadow roots; a runner without extension APIs passes its own.
+ */
+export async function takeSnapshot(crawlerTokens: readonly string[], shadowRootOf: ShadowRootOf = openOrClosedShadowRoot): Promise<SnapshotResult> {
   const start = performance.now();
   const url = location.href;
   const characterSet = document.characterSet;
@@ -105,7 +108,7 @@ export async function takeSnapshot(crawlerTokens: readonly string[]): Promise<Sn
     fetchRaw(url, "include", characterSet),
   ]);
   const [{ settled, settleMs }, [first, second, withCookies]] = await Promise.all([settle(start), rawFetches]);
-  const { blocks, index } = collectBlocks();
+  const { blocks, index } = collectBlocks(shadowRootOf);
   const html = document.documentElement;
   const snapshot: Snapshot = {
     url,
