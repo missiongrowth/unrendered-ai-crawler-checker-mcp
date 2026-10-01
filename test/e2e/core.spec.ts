@@ -398,7 +398,7 @@ test.describe("botReport", () => {
       controls: [ok(GARDEN), ok(GARDEN)],
       agents: agentsWith({
         GPTBot: ok("forbidden", { status: 403 }),
-        "OAI-SearchBot": ok(html("Please wait"), { headers: { "cf-mitigated": "challenge" } }),
+        "OAI-SearchBot": ok(html("Please wait", '<meta name="robots" content="noindex">'), { headers: { "cf-mitigated": "challenge" } }),
         "ChatGPT-User": ok(html("Access notice only")),
         PerplexityBot: ok("slow down", { status: 429 }),
         "Perplexity-User": ok(GARDEN, { url: "https://example.com/elsewhere" }),
@@ -424,7 +424,7 @@ test.describe("botReport", () => {
     const row = (token: string) => result.rows.find((r) => r.token === token);
     const expected: Record<string, [string, boolean?]> = {
       GPTBot: ["blocked"],
-      "OAI-SearchBot": ["challenged"],
+      "OAI-SearchBot": ["challenged", false],
       "ChatGPT-User": ["different"],
       PerplexityBot: ["rate-limited"],
       "Perplexity-User": ["redirected-elsewhere"],

@@ -1,6 +1,7 @@
 import { PROBE_PORT } from "./messages";
 import type { AnalyseMessage, ProbeAgent, ProbeReply, ProbeRequest, RawResponse } from "./messages";
 import { fetchRaw } from "./fetch-raw";
+import { detectChallenge } from "./core/challenge";
 import type { RobotsFetch } from "./core/robots";
 
 const RULE_ID = 1;
@@ -24,6 +25,8 @@ chrome.action.onClicked.addListener((tab) => {
 async function fetchRobots(pageUrl: string): Promise<RobotsFetch> {
   try {
     const res = await fetch(new URL("/robots.txt", pageUrl).href, { credentials: "omit", cache: "no-store" });
+    const challenge = detectChallenge(res.headers);
+    if (challenge !== null) return { challenge, status: res.status };
     return { status: res.status, body: await res.text() };
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };

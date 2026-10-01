@@ -118,13 +118,15 @@ export function botReport(reply: Extract<ProbeReply, { type: "probe-result" }>, 
       },
       controlSimilarity,
     );
-    return { bot, robots, probe: { verdict, noindex: noindexFor(res, docOf(res), bot.token) } };
+    // A challenge, error or redirect page carries its own robots tags, not the site's.
+    const gotPage = verdict.kind === "same" || verdict.kind === "different";
+    return { bot, robots, probe: { verdict, noindex: gotPage && noindexFor(res, docOf(res), bot.token) } };
   });
 
   const { robots } = reply;
   return {
     robots,
-    contentSignals: "status" in robots && robots.status >= 200 && robots.status <= 299 ? contentSignals(robots.body) : [],
+    contentSignals: "body" in robots && robots.status >= 200 && robots.status <= 299 ? contentSignals(robots.body) : [],
     controlSimilarity,
     rows,
   };

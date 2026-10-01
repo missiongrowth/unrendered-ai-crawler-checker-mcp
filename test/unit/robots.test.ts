@@ -34,6 +34,13 @@ describe("robotsVerdict fetch outcomes", () => {
     expect(v.reason).toBe("5xx-disallow-all");
   });
 
+  it("a challenge page leaves the rules unknown", () => {
+    const challenge = { vendor: "Cloudflare", header: "cf-mitigated", value: "challenge" };
+    const v = robotsVerdict({ challenge, status: 403 }, "Bot", "https://a.com/x");
+    expect(v.allowed).toBeNull();
+    expect(v.reason).toBe("challenged");
+  });
+
   it("network error disallows all", () => {
     const v = robotsVerdict({ error: "ECONNRESET" }, "Bot", "https://a.com/x");
     expect(v.allowed).toBe(false);

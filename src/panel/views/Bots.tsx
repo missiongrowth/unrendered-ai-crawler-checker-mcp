@@ -23,6 +23,10 @@ function robotsReason(v: RobotsVerdict, fetched: RobotsFetch): string {
       return `robots.txt returned HTTP ${"status" in fetched ? String(fetched.status) : ""}, which means everything is blocked (RFC 9309)`;
     case "unreachable-disallow-all":
       return `robots.txt could not be fetched: ${"error" in fetched ? fetched.error : ""}. RFC 9309 treats this as everything blocked.`;
+    case "challenged":
+      return "challenge" in fetched
+        ? `${fetched.challenge.vendor} sent a challenge page (${fetched.challenge.header}: ${fetched.challenge.value}, HTTP ${String(fetched.status)}) instead, so the rules are unknown.`
+        : "";
   }
 }
 
@@ -76,7 +80,7 @@ function jsLine(bot: Bot): string {
 function BotLine({ row, fetched, product }: { row: BotRow; fetched: RobotsFetch; product: string }) {
   const { bot, robots, probe } = row;
   return (
-    <details class="bot-row" data-bot={bot.token} data-verdict={probe?.verdict.kind ?? "not-probed"} data-robots={robots.allowed ? "allowed" : "disallowed"}>
+    <details class="bot-row" data-bot={bot.token} data-verdict={probe?.verdict.kind ?? "not-probed"} data-robots={robots.allowed === null ? "unknown" : robots.allowed ? "allowed" : "disallowed"}>
       <summary class="hover-row">
         <IconChevronRight />
         <span class="bot-id">
@@ -86,7 +90,13 @@ function BotLine({ row, fetched, product }: { row: BotRow; fetched: RobotsFetch;
           </span>
         </span>
         <span class="badges">
-          {robots.allowed ? <Badge tone="ok">Allowed</Badge> : <Badge tone="bad">Blocked by robots.txt</Badge>}
+          {robots.allowed === null ? (
+            <Badge tone="plain">robots.txt not read</Badge>
+          ) : robots.allowed ? (
+            <Badge tone="ok">Allowed</Badge>
+          ) : (
+            <Badge tone="bad">Blocked by robots.txt</Badge>
+          )}
           <ResponseBadge verdict={probe?.verdict ?? null} />
           {probe?.noindex === true && <Badge tone="warn">noindex</Badge>}
         </span>
@@ -117,7 +127,7 @@ function BotLine({ row, fetched, product }: { row: BotRow; fetched: RobotsFetch;
 }
 
 function Signals({ report }: { report: BotReport }) {
-  if (report.contentSignals.length === 0 || "error" in report.robots) return null;
+  if (report.contentSignals.length === 0 || !("body" in report.robots)) return null;
   const lines = report.robots.body.split(/\r\n|\r|\n/);
   return (
     <section>

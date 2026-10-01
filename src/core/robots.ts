@@ -1,11 +1,13 @@
 import { RobotsMatcher, RobotsParseHandler, parseRobotsTxt } from "google-robotstxt-parser";
+import type { Challenge } from "./challenge";
 
-export type RobotsFetch = { status: number; body: string } | { error: string };
+export type RobotsFetch = { status: number; body: string } | { challenge: Challenge; status: number } | { error: string };
 
-export type RobotsReason = "rules" | "no-matching-rule" | "4xx-allow-all" | "5xx-disallow-all" | "unreachable-disallow-all";
+export type RobotsReason = "rules" | "no-matching-rule" | "4xx-allow-all" | "5xx-disallow-all" | "unreachable-disallow-all" | "challenged";
 
 export type RobotsVerdict = {
-  allowed: boolean;
+  /** null: a challenge page came back instead of robots.txt, so the rules are unknown. */
+  allowed: boolean | null;
   reason: RobotsReason;
   line: number | null;
   lineText: string | null;
@@ -23,7 +25,7 @@ function truncate(body: string): string {
   return new TextDecoder().decode(bytes.subarray(0, MAX_BYTES));
 }
 
-function noRules(allowed: boolean, reason: RobotsReason): RobotsVerdict {
+function noRules(allowed: boolean | null, reason: RobotsReason): RobotsVerdict {
   return { allowed, reason, line: null, lineText: null, specificGroup: false };
 }
 
@@ -34,6 +36,7 @@ function lineAt(body: string, line: number): string {
 /** RFC 9309 §2.3.1: 2xx parsed, 4xx unavailable (allow all), 5xx or network failure unreachable (disallow all). */
 export function robotsVerdict(fetched: RobotsFetch, token: string, url: string): RobotsVerdict {
   if ("error" in fetched) return noRules(false, "unreachable-disallow-all");
+  if ("challenge" in fetched) return noRules(null, "challenged");
   const { status } = fetched;
   if (status >= 500) return noRules(false, "5xx-disallow-all");
   if (status >= 400) return noRules(true, "4xx-allow-all");
