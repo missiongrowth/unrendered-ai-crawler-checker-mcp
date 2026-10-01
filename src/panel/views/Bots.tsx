@@ -9,7 +9,8 @@ import { Badge, ExternalLink } from "./ui";
 /** Probed by no one on purpose: the extension does not send these user-agents. */
 const NOT_IMITATED: ReadonlySet<string> = new Set(["Googlebot", "Applebot"]);
 
-const pct = (n: number) => String(Math.round(n * 100));
+/** Rounded down, so only an identical word set shows 100%. */
+const pct = (n: number) => String(Math.floor(n * 100));
 
 function robotsReason(v: RobotsVerdict, fetched: RobotsFetch): string {
   switch (v.reason) {

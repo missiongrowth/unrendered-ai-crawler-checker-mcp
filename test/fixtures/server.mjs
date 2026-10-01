@@ -200,6 +200,11 @@ export async function startFixtureServers(basePort = 0) {
       });
     }
     if (path === "/ua/mixed") return uaMixed(req, res);
+    // A live page can change between two requests: ChatGPT-User's first request gets another page, later ones the same page.
+    if (path === "/ua/flaky") {
+      const first = /ChatGPT-User\//i.test(req.headers["user-agent"] ?? "") && nextCount("flaky") === 0;
+      return send(res, 200, await page(first ? "ua-different" : "ua-page"));
+    }
     if (path === "/ua/echo" || path === "/ua/landed") return send(res, 200, await page("ua-page"));
     if (path.startsWith("/spa/")) return send(res, 200, await page("spa-shell"));
 

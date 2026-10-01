@@ -51,6 +51,18 @@ export async function runBotCheck(snapshot: Snapshot): Promise<BotReport> {
   const granted = await chrome.permissions.request({ origins });
   if (!granted) throw new AccessDenied(new URL(snapshot.url).host);
   const agents = probedAgents();
-  const reply = await probe({ type: "probe", url: snapshot.url, hosts, agents, characterSet: snapshot.characterSet });
-  return botReport(reply, snapshot.url);
+  const request: ProbeRequest = { type: "probe", url: snapshot.url, hosts, agents, characterSet: snapshot.characterSet };
+  const first = botReport(await probe(request), snapshot.url);
+  // A live page can change between two requests, so a different page is requested once more with
+  // fresh controls, and the second answer stands.
+  const retest = new Set(first.rows.flatMap((r) => (r.probe?.verdict.kind === "different" ? [r.bot.token] : [])));
+  if (retest.size === 0) return first;
+  const again = botReport(await probe({ ...request, agents: agents.filter((a) => retest.has(a.token)) }), snapshot.url);
+  return {
+    ...first,
+    rows: first.rows.map((r) => {
+      const probe = retest.has(r.bot.token) ? again.rows.find((x) => x.bot.token === r.bot.token)?.probe : undefined;
+      return probe === undefined ? r : { ...r, probe };
+    }),
+  };
 }

@@ -15,7 +15,7 @@ Unrendered is a Chrome extension made by MissionGrowth. It compares a page's raw
 Only when you ask for it, and only to the site you are analysing:
 
 - **Analyse (toolbar icon):** the page you are viewing is requested again from its own server, twice without cookies and once with your cookies, so the raw HTML can be compared with what your browser rendered. The response never leaves your browser.
-- **Check bots (Bots tab, after you allow access to the site):** the site's `/robots.txt` is requested, and the page is requested once with each listed AI bot's published user-agent and twice with your browser's own user-agent. These requests are sent without cookies.
+- **Check bots (Bots tab, after you allow access to the site):** the site's `/robots.txt` is requested, and the page is requested once with each listed AI bot's published user-agent and twice with your browser's own user-agent. When a bot gets a different page, its request and the two normal requests are sent once more. These requests are sent without cookies.
 
 ## Permissions
 

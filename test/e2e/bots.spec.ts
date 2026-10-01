@@ -80,6 +80,14 @@ test("bot check on /ua/mixed: verdicts, robots rows, user-agent and client hints
   expect(controls.length, "controls use the browser's own user-agent").toBeGreaterThanOrEqual(2);
 });
 
+test("bot check: a different page is requested once more, and the second answer stands", async ({ extWithHosts: ext, servers }) => {
+  servers.reset();
+  const rows = byToken(await runBotCheck(ext, `${servers.origins.main}/ua/flaky`));
+  expect(rows.get("ChatGPT-User")?.verdict).toBe("same");
+  const userAgent = BOTS.find((b) => b.token === "ChatGPT-User")?.userAgent;
+  expect(servers.log().filter((e) => e.path === "/ua/flaky" && e.headers["user-agent"] === userAgent)).toHaveLength(2);
+});
+
 const ROBOTS_ORIGINS = [
   { origin: "robots500", disallowed: "all" },
   { origin: "robots404", disallowed: "none" },
