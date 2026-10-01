@@ -412,6 +412,8 @@ test.describe("botReport", () => {
         "MistralAI-Training": ok(GARDEN),
         DuckAssistBot: ok(GARDEN),
         CCBot: ok(GARDEN),
+        ClaudeBot: ok(GARDEN),
+        "Claude-User": ok(GARDEN),
       }),
     };
     const result = await reportFor(page, { reply });
@@ -432,7 +434,8 @@ test.describe("botReport", () => {
       "Amzn-SearchBot": ["same", true],
       "Amzn-User": ["same", false],
       CCBot: ["same", false],
-      ClaudeBot: ["not-probed"],
+      ClaudeBot: ["same", false],
+      "Claude-SearchBot": ["not-probed"],
       Googlebot: ["not-probed"],
     };
     for (const [token, [kind, noindex]] of Object.entries(expected)) {

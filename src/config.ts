@@ -11,7 +11,7 @@ export const CONFIG = {
   rawMaxBytes: 5 * 1024 * 1024,
   /** A block needs at least this share of its tokens aligned in order to count as `partial`. */
   partialMinShare: 0.5,
-  /** Blocks shorter than this are matched only by exact text, never by partial overlap or data containment. */
+  /** Blocks shorter than this are matched by exact text, or in raw order together with a neighbouring block; never by partial overlap or data containment. */
   minTokensForFuzzy: 4,
   /** Raw tokens scanned around an alignment gap when looking for a partial match. */
   partialWindowTokens: 4000,

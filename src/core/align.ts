@@ -19,6 +19,8 @@ export interface Verdict {
 export interface AlignInput {
   /** Rendered blocks in document order, each tokenized. */
   rendered: readonly (readonly string[])[];
+  /** Parallel to `rendered`. A hidden block never takes a raw block from visible text that repeats it. */
+  hidden: readonly boolean[];
   /** Raw blocks of the first raw fetch, document order. */
   rawA: readonly (readonly string[])[];
   /** Raw blocks of the second raw fetch (noise floor). */
@@ -83,7 +85,7 @@ class TokenStream {
  * so repeated text such as "Add to cart" cannot be credited more often than the
  * server sent it.
  */
-function exactChain(rendered: AlignInput["rendered"], raw: AlignInput["rawA"]): Map<number, number> {
+function exactChain(rendered: AlignInput["rendered"], raw: AlignInput["rawA"], eligible: (i: number, j: number) => boolean): Map<number, number> {
   const rawByKey = new Map<string, number[]>();
   raw.forEach((tokens, j) => {
     const k = key(tokens);
@@ -128,6 +130,7 @@ function exactChain(rendered: AlignInput["rendered"], raw: AlignInput["rawA"]): 
     // Descending j: one rendered block can never chain onto itself.
     for (let c = candidates.length - 1; c >= 0; c--) {
       const j = candidates[c] ?? 0;
+      if (!eligible(i, j)) continue;
       const [prevScore, prevNode] = query(j);
       const score = prevScore + tokens.length;
       const node = nodeI.length;
@@ -161,9 +164,11 @@ function lcs(a: readonly string[], b: readonly string[]): number {
 }
 
 export function align(input: AlignInput): AlignResult {
-  const { rendered, rawA, rawB } = input;
-  const chain = exactChain(rendered, rawA);
+  const { rendered, hidden, rawA, rawB } = input;
+  // Visible text first, so a hidden copy (a collapsed tab, a template the page clones) cannot take its raw block.
+  const chain = exactChain(rendered, rawA, (i) => hidden[i] !== true);
   const usedRaw = new Set(chain.values());
+  const hiddenChain = exactChain(rendered, rawA, (i, j) => hidden[i] === true && !usedRaw.has(j));
   const keysA = new Set(rawA.map(key));
   const keysB = new Set(rawB.map(key));
   const structured = new TokenStream(input.structuredLeaves);
@@ -182,7 +187,7 @@ export function align(input: AlignInput): AlignResult {
     next = chain.get(i) ?? next;
     anchorAfter[i] = next;
   }
-  const windows = new Map<string, { tokens: string[]; vocab: Set<string> }>();
+  const windows = new Map<string, { tokens: string[]; vocab: Set<string>; stream: TokenStream }>();
   const windowFor = (i: number) => {
     const from = (anchorBefore[i] ?? -1) + 1;
     const to = anchorAfter[i] ?? rawA.length;
@@ -193,7 +198,8 @@ export function align(input: AlignInput): AlignResult {
       for (let j = from; j < to && tokens.length < CONFIG.partialWindowTokens; j++) {
         if (!usedRaw.has(j)) tokens.push(...(rawA[j] ?? []));
       }
-      w = { tokens: tokens.slice(0, CONFIG.partialWindowTokens), vocab: new Set(tokens) };
+      const kept = tokens.slice(0, CONFIG.partialWindowTokens);
+      w = { tokens: kept, vocab: new Set(tokens), stream: new TokenStream([kept]) };
       windows.set(id, w);
     }
     return w;
@@ -207,12 +213,25 @@ export function align(input: AlignInput): AlignResult {
     return null;
   };
 
+  // JavaScript can split one raw block into several (a code editor makes one div per line).
+  // A block shorter than minTokensForFuzzy counts only together with a neighbour, so a lone "1" never matches.
+  const inOrder = (i: number, stream: TokenStream) => {
+    const tokens = rendered[i] ?? [];
+    if (tokens.length >= CONFIG.minTokensForFuzzy) return stream.contains(tokens);
+    const prev = rendered[i - 1];
+    const next = rendered[i + 1];
+    return [prev && [...prev, ...tokens], next && [...tokens, ...next]].some(
+      (seq) => seq !== undefined && seq.length >= CONFIG.minTokensForFuzzy && stream.contains(seq),
+    );
+  };
+
   const verdicts = rendered.map((tokens, i): Verdict => {
-    if (chain.has(i)) return { state: "server", credited: tokens.length };
+    if (chain.has(i) || hiddenChain.has(i)) return { state: "server", credited: tokens.length };
     const k = key(tokens);
     if (keysA.has(k)) return { state: "ambiguous", credited: 0 };
+    const w = windowFor(i);
+    if (inOrder(i, w.stream)) return { state: "server", credited: tokens.length };
     if (tokens.length >= CONFIG.minTokensForFuzzy) {
-      const w = windowFor(i);
       const shared = tokens.filter((t) => w.vocab.has(t)).length;
       if (shared / tokens.length >= CONFIG.partialMinShare) {
         const common = lcs(tokens, w.tokens);

@@ -3,9 +3,10 @@ import { align, type AlignInput } from "../../src/core/align";
 import { tokenize } from "../../src/core/normalize";
 
 const blocks = (...texts: string[]) => texts.map(tokenize);
-const run = (partial: Partial<Record<keyof AlignInput, string[]>> & { rendered: string[] }) =>
+const run = (partial: Partial<Record<Exclude<keyof AlignInput, "hidden">, string[]>> & { rendered: string[]; hidden?: boolean[] }) =>
   align({
     rendered: blocks(...partial.rendered),
+    hidden: partial.hidden ?? partial.rendered.map(() => false),
     rawA: blocks(...(partial.rawA ?? [])),
     rawB: blocks(...(partial.rawB ?? partial.rawA ?? [])),
     structuredLeaves: blocks(...(partial.structuredLeaves ?? [])),
@@ -79,6 +80,25 @@ describe("align", () => {
     const r = run({ rendered: ["Welcome to the app", "Dashboard"], rawA: ["Loading"] });
     expect(states(r)).toEqual(["js-added", "js-added"]);
     expect(r.removed).toEqual([0]);
+  });
+
+  // MDN: one raw <pre> becomes an editor with a line-number gutter and one div per line.
+  const code = '<article class="forecast"> <h1>Weather forecast for Seattle</h1> <p>Rain.</p> </article>';
+  const lines = ['<article class="forecast">', "<h1>Weather forecast for Seattle</h1>", "<p>Rain.</p>", "</article>"];
+
+  it("credits lines JavaScript split out of one raw block, short lines through their neighbours", () => {
+    const r = run({ rendered: ["Try it", "1", "2", "3", "4", ...lines, "Examples"], rawA: ["Try it", code, "Examples"] });
+    expect(states(r)).toEqual(["server", "js-added", "js-added", "js-added", "js-added", "server", "server", "server", "server", "server"]);
+    expect(r.verdicts.slice(5, 9).map((v) => v.credited)).toEqual([3, 6, 3, 1]);
+  });
+
+  it("does not let a hidden copy take the raw block from visible text", () => {
+    const r = run({
+      rendered: ["Try it", ...lines, code, "Examples", "Try it"],
+      hidden: [false, false, false, false, false, true, false, true],
+      rawA: ["Try it", code, "Examples"],
+    });
+    expect(states(r)).toEqual(["server", "server", "server", "server", "server", "server", "server", "ambiguous"]);
   });
 
   it("does not report raw text merged into a bigger rendered block as removed", () => {

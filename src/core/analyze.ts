@@ -160,9 +160,11 @@ export function analyze(snapshot: Snapshot, crawlerTokens: readonly string[]): R
 
   const rendered = snapshot.blocks.map((b) => ({ block: b, tokens: tokenize(b.text) })).filter((b) => b.tokens.length > 0);
   const renderedTokens = rendered.map((b) => b.tokens);
+  const hidden = rendered.map((b) => b.block.hidden);
   const firstBlocks = rawBlocks(first);
   const { verdicts, removed } = align({
     rendered: renderedTokens,
+    hidden,
     rawA: firstBlocks,
     rawB: rawBlocks(second),
     structuredLeaves: leaves(data.structured),
@@ -183,7 +185,7 @@ export function analyze(snapshot: Snapshot, crawlerTokens: readonly string[]): R
 
   let cookieLift: number | null = null;
   if (raw.withCookies.ok && raw.withCookies.status >= 200 && raw.withCookies.status <= 299) {
-    const withCookies = align({ rendered: renderedTokens, rawA: rawBlocks(parse(raw.withCookies.html)), rawB: [], structuredLeaves: [], hydrationLeaves: [] });
+    const withCookies = align({ rendered: renderedTokens, hidden, rawA: rawBlocks(parse(raw.withCookies.html)), rawB: [], structuredLeaves: [], hydrationLeaves: [] });
     const credited = withCookies.verdicts.reduce((n, v, i) => n + (blocks[i] && !blocks[i].hidden && blocks[i].region !== "dialog" ? v.credited : 0), 0);
     cookieLift = all.total === 0 ? 0 : credited / all.total - share(all);
   }

@@ -81,7 +81,7 @@ export async function launchExtension(extensionDir: string): Promise<Extension> 
 }
 
 /**
- * Copy of dist whose manifest grants http hosts at install. `chrome.permissions.request`
+ * Copy of dist whose manifest grants every host at install. `chrome.permissions.request`
  * then resolves without the native prompt, which automation cannot click.
  */
 export function buildHostAccessCopy(): string {
@@ -89,7 +89,7 @@ export function buildHostAccessCopy(): string {
   cpSync(DIST, dir, { recursive: true });
   const manifest = JSON.parse(readFileSync(join(DIST, "manifest.json"), "utf8")) as Record<string, unknown>;
   delete manifest["optional_host_permissions"];
-  manifest["host_permissions"] = ["http://*/*"];
+  manifest["host_permissions"] = ["http://*/*", "https://*/*"];
   writeFileSync(join(dir, "manifest.json"), JSON.stringify(manifest, null, 2));
   return dir;
 }
