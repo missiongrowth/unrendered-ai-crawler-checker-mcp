@@ -2,6 +2,17 @@
   "name": "unrendered-mcp",
   "version": "0.1.0",
   "description": "MCP server that compares a page's raw HTML with its rendered DOM, using the Unrendered extension's own analysis code.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "seo",
+    "ai-crawlers",
+    "gptbot",
+    "javascript-rendering",
+    "raw-html"
+  ],
+  "homepage": "https://missiongrowth.io/tools/unrendered",
+  "author": "Mission Growth (https://missiongrowth.io)",
   "license": "AGPL-3.0-only",
   "type": "module",
   "bin": {
