@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Unrendered by Mission Growth",
+  "name": "Unrendered - AI Crawler Checker",
   "short_name": "Unrendered",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.",
   "minimum_chrome_version": "124",
   "permissions": [

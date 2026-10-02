@@ -4,7 +4,7 @@ Fields of the developer dashboard, in its order. Paste the text between the line
 
 ## Store listing
 
-**Name** (from the manifest): Unrendered by Mission Growth
+**Name** (from the manifest): Unrendered - AI Crawler Checker
 
 **Summary** (from the manifest, 132 characters at most): Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.
 
@@ -40,7 +40,7 @@ Share
 • A 1200 × 630 image, a one-line summary and a Markdown report.
 
 In your AI assistant
-• The same analysis also runs as an MCP server, so an assistant such as Claude or Cursor can check a page for you. Setup: missiongrowth.io/tools/unrendered
+• The same analysis also runs as an MCP server, so an assistant such as Claude or Cursor can check a page for you. Setup: https://missiongrowth.io/tools/unrendered
 
 How it measures
 After the page settles, the same tab fetches the URL again without cookies, as a crawler would, and matches each rendered text block, in order, against the raw HTML. A page that answers with an error, a redirect or a challenge page from Cloudflare, AWS WAF or DataDome gets no percentage, because the raw HTML is not the page.
@@ -51,7 +51,7 @@ The extension is not a crawler. Requests come from your browser and your IP, and
 Privacy
 Nothing is sent to Mission Growth or anyone else. No analytics, no accounts, no storage.
 
-Free and open source under the AGPL-3.0. Made by Mission Growth.
+Free and open source under the AGPL-3.0. Made by Mission Growth: https://missiongrowth.io/tools/unrendered
 
 ---
 
