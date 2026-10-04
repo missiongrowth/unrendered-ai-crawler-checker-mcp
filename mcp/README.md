@@ -1,4 +1,4 @@
-# unrendered-mcp
+# unrendered-mcp: AI Crawler Checker MCP Server
 
 An MCP server that gives an AI assistant the analysis of the [Unrendered](https://missiongrowth.io/tools/unrendered) Chrome extension: what a crawler that does not run JavaScript receives (the raw HTML) compared with the page a browser renders.
 

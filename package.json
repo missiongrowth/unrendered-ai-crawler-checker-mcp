@@ -7,9 +7,9 @@
   "homepage": "https://missiongrowth.io/tools/unrendered",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imfurkana/unrendered.git"
+    "url": "git+https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp.git"
   },
-  "bugs": "https://github.com/imfurkana/unrendered/issues",
+  "bugs": "https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp/issues",
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
