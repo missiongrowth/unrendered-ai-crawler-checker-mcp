@@ -155,8 +155,9 @@ export async function startFixtureServers(basePort = 0) {
         return send(res, 200, await page("cookie-dependent", { GREETING: greeting }));
       }
       case "ab-parity": {
-        // Even requests get red, odd get blue: page load, fetch A and fetch B see red, blue, red.
-        const red = nextCount("ab-parity") % 2 === 0;
+        // Requests with the test cookie (the page load and the extension's cookie fetch C) always get red and are
+        // not counted. The cookie-less fetches A and B alternate red, blue, so exactly one of them has the red text.
+        const red = (req.headers.cookie ?? "").includes("ab=1") || nextCount("ab-parity") % 2 === 0;
         // No shared words, so a mismatch is never read as a partial match.
         const variant = red ? "Crimson bicycle bundle ships tomorrow morning." : "Azure kayak paddles arrive next weekend.";
         return send(res, 200, await page("variant", { VARIANT: variant }));

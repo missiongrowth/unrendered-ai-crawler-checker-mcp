@@ -77,9 +77,10 @@ export const CASES: readonly FixtureCase[] = [
   {
     // The extension fires fetch A, B and C at once, so which of A and B the server sees first is a race:
     // the rendered text is in A ("server") or only in B ("volatile"). Never "js-added" or "partial".
-    // The deterministic volatile case lives in core.spec.ts.
+    // The cookie keeps fetch C (with cookies) out of the alternation. The deterministic volatile case lives in core.spec.ts.
     name: "ab-alternating",
     goto: "/p/ab-parity",
+    cookies: [{ name: "ab", value: "1" }],
     dynamic: true,
     annotations: [{ text: "Crimson bicycle bundle ships tomorrow morning.", states: ["volatile"], alternatives: [["server"]] }],
   },
