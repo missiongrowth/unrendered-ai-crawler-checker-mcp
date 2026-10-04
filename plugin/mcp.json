@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "unrendered": {
+      "command": "npx",
+      "args": ["-y", "unrendered-mcp@0.1.3"]
+    }
+  }
+}

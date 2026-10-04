@@ -38,7 +38,14 @@ Requires Node 20 or later and Google Chrome. No browser is downloaded.
 [<img src="https://cursor.com/deeplink/mcp-install-dark.svg" alt="Install in Cursor" height="32">](https://cursor.com/en/install-mcp?name=unrendered&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsInVucmVuZGVyZWQtbWNwIl19)
 [<img src="https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square" alt="Install in VS Code" height="32">](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%257B%2522name%2522%253A%2522unrendered%2522%252C%2522command%2522%253A%2522npx%2522%252C%2522args%2522%253A%255B%2522-y%2522%252C%2522unrendered-mcp%2522%255D%257D)
 
-Claude Code:
+Claude Code, as a plugin (the MCP server plus a skill that tells Claude when to use it):
+
+```sh
+claude plugin marketplace add imfurkana/unrendered-ai-crawler-checker-mcp
+claude plugin install unrendered@unrendered
+```
+
+Or the MCP server alone:
 
 ```sh
 claude mcp add unrendered -- npx -y unrendered-mcp

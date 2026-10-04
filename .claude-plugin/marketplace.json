@@ -1,0 +1,17 @@
+{
+  "name": "unrendered",
+  "owner": {
+    "name": "Mission Growth",
+    "url": "https://missiongrowth.io"
+  },
+  "description": "Unrendered: check which page content AI crawlers can't read.",
+  "plugins": [
+    {
+      "name": "unrendered",
+      "source": "./plugin",
+      "description": "Check which page content AI crawlers like GPTBot and ClaudeBot can't read, and what robots.txt allows per AI bot.",
+      "homepage": "https://missiongrowth.io/tools/unrendered",
+      "category": "productivity"
+    }
+  ]
+}

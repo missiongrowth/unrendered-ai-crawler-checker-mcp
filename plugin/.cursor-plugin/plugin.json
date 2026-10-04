@@ -1,0 +1,15 @@
+{
+  "name": "unrendered",
+  "displayName": "Unrendered: AI Crawler Checker",
+  "version": "0.1.3",
+  "description": "Check which page content AI crawlers like GPTBot and ClaudeBot can't read. Compares a page's raw HTML with the rendered page in your own Chrome, and shows robots.txt rules and server answers per AI bot.",
+  "author": {
+    "name": "Mission Growth",
+    "url": "https://missiongrowth.io"
+  },
+  "homepage": "https://missiongrowth.io/tools/unrendered",
+  "repository": "https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp",
+  "license": "AGPL-3.0-only",
+  "keywords": ["seo", "ai-search", "crawlers", "javascript-rendering", "robots-txt", "gptbot"],
+  "logo": "assets/logo.svg"
+}
