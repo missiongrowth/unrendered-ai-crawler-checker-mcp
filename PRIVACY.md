@@ -27,7 +27,7 @@ Only when you ask for it, and only to the site you are analysing (and to any add
 - `scripting`: run the comparison script in that tab.
 - `sidePanel`: show the results next to the page.
 - `declarativeNetRequestWithHostAccess`: set the user-agent on the extension's own bot-check requests. It never changes the requests of your pages.
-- Optional site access: asked for one site at a time when you click "Check bots", because those requests go to the site from the extension.
+- Optional site access: asked for one site at a time when you click "Check bots", because those requests go to the site from the extension. The access is removed when the check ends.
 
 ## Contact
 

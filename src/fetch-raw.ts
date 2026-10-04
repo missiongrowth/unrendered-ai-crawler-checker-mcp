@@ -2,7 +2,7 @@ import { CONFIG } from "./config";
 import { decodeHtml } from "./core/charset";
 import type { RawResponse } from "./messages";
 
-async function readCapped(res: Response): Promise<{ bytes: Uint8Array; truncated: boolean }> {
+export async function readCapped(res: Response): Promise<{ bytes: Uint8Array; truncated: boolean }> {
   const chunks: Uint8Array[] = [];
   let size = 0;
   let truncated = false;

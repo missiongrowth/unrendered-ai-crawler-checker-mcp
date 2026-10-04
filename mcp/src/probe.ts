@@ -1,4 +1,4 @@
-import { fetchRaw } from "../../src/fetch-raw";
+import { fetchRaw, readCapped } from "../../src/fetch-raw";
 import { detectChallenge } from "../../src/core/challenge";
 import type { RobotsFetch } from "../../src/core/robots";
 import type { ProbeAgent, ProbeReply, RawResponse } from "../../src/messages";
@@ -18,7 +18,7 @@ async function fetchRobots(pageUrl: string, userAgent: string): Promise<RobotsFe
     });
     const challenge = detectChallenge(res.headers);
     if (challenge !== null) return { challenge, status: res.status };
-    return { status: res.status, body: await res.text() };
+    return { status: res.status, body: new TextDecoder().decode((await readCapped(res)).bytes) };
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }

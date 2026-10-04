@@ -3,19 +3,28 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { analyzeUrl } from "./analyze";
 import { checkBots } from "./bots";
+import { assertPublicHost } from "./guard";
 import { summarizeAnalysis, summarizeBots } from "./summary";
 
-const server = new McpServer({ name: "unrendered-mcp", version: "0.1.0" });
+const server = new McpServer({ name: "unrendered-mcp", version: "0.1.1" });
 const input = { url: z.url({ protocol: /^https?$/ }).describe("Full http(s) URL of the page to analyse") };
 
 type ToolResult = { content: { type: "text"; text: string }[]; isError?: boolean };
 
-async function respond(run: () => Promise<unknown>): Promise<ToolResult> {
-  try {
-    return { content: [{ type: "text", text: JSON.stringify(await run()) }] };
-  } catch (e) {
-    return { content: [{ type: "text", text: e instanceof Error ? e.message : String(e) }], isError: true };
-  }
+// Each call starts its own Chrome, so calls run one at a time.
+let queue: Promise<unknown> = Promise.resolve();
+
+function respond(url: string, run: () => Promise<unknown>): Promise<ToolResult> {
+  const next = queue.then(async (): Promise<ToolResult> => {
+    try {
+      await assertPublicHost(url);
+      return { content: [{ type: "text", text: JSON.stringify(await run()) }] };
+    } catch (e) {
+      return { content: [{ type: "text", text: e instanceof Error ? e.message : String(e) }], isError: true };
+    }
+  });
+  queue = next;
+  return next;
 }
 
 server.registerTool(
@@ -28,7 +37,7 @@ server.registerTool(
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
   ({ url }) =>
-    respond(async () => {
+    respond(url, async () => {
       const result = await analyzeUrl(url);
       if (!result.ok) throw new Error(result.error);
       return summarizeAnalysis(url, result.snapshot, result.report);
@@ -44,7 +53,7 @@ server.registerTool(
     inputSchema: input,
     annotations: { readOnlyHint: true, openWorldHint: true },
   },
-  ({ url }) => respond(async () => summarizeBots(url, await checkBots(url))),
+  ({ url }) => respond(url, async () => summarizeBots(url, await checkBots(url))),
 );
 
 await server.connect(new StdioServerTransport());

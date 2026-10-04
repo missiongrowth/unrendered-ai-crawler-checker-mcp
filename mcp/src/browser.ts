@@ -19,7 +19,8 @@ export interface ChromeSession {
 
 async function launch(): Promise<Browser> {
   try {
-    return await chromium.launch({ channel: CHANNEL, headless: true });
+    // Playwright adds --no-sandbox unless chromiumSandbox is true; the pages loaded here are untrusted.
+    return await chromium.launch({ channel: CHANNEL, headless: true, chromiumSandbox: true });
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     if (NOT_FOUND.test(message)) {

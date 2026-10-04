@@ -1,5 +1,5 @@
 import { build } from "esbuild";
-import { chmod, rm } from "node:fs/promises";
+import { chmod, copyFile, rm } from "node:fs/promises";
 
 await rm("dist", { recursive: true, force: true });
 
@@ -23,3 +23,5 @@ await build({
   banner: { js: "#!/usr/bin/env node" },
 });
 await chmod("dist/server.js", 0o755);
+// page-core bundles the Apache-2.0 robots.txt parser; its notice travels with the package.
+await copyFile("../THIRD_PARTY_NOTICES.md", "dist/THIRD_PARTY_NOTICES.md");

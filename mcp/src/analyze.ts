@@ -3,6 +3,7 @@ import type { Report } from "../../src/core/analyze";
 import type { Snapshot } from "../../src/messages";
 import { isolatedWorld, newContext, openCore, withChrome } from "./browser";
 import { SNAPSHOT_FN } from "./globals";
+import { assertPublicHost } from "./guard";
 
 const NAVIGATION_TIMEOUT_MS = 30_000;
 const LOAD_TIMEOUT_MS = 15_000;
@@ -22,6 +23,8 @@ export function analyzeUrl(url: string): Promise<Analysis> {
     } catch (e) {
       return { ok: false, error: `Could not load ${url}: ${messageOf(e)}` };
     }
+    // A redirect may land on a local address that the input URL check could not see.
+    await assertPublicHost(page.url());
     // Pages that never finish loading are analysed as they stand; the snapshot reports `settled: false`.
     await page.waitForLoadState("load", { timeout: LOAD_TIMEOUT_MS }).catch(() => undefined);
     const world = await isolatedWorld(context, page, "page-snapshot.js");

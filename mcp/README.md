@@ -35,6 +35,8 @@ Add to `claude_desktop_config.json`:
 
 If Chrome is missing the tools answer with an error that says so. `UNRENDERED_CHROME_CHANNEL` selects another Chromium channel (default `chrome`).
 
+By default the tools refuse URLs whose host is, or resolves to, a loopback, private, link-local or multicast address, because the URL comes from a model that may have read a hostile page. Set `UNRENDERED_ALLOW_PRIVATE_HOSTS=1` to analyse a local dev server. Chrome runs with its sandbox on.
+
 ## Tools
 
 ### `analyze_page({ url })`

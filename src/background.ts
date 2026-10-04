@@ -1,10 +1,12 @@
 import { PROBE_PORT } from "./messages";
 import type { AnalyseMessage, ProbeAgent, ProbeReply, ProbeRequest, RawResponse } from "./messages";
-import { fetchRaw } from "./fetch-raw";
+import { fetchRaw, readCapped } from "./fetch-raw";
 import { detectChallenge } from "./core/challenge";
 import type { RobotsFetch } from "./core/robots";
 
 const RULE_ID = 1;
+const REQUEST_TIMEOUT_MS = 30_000;
+const timeout = () => AbortSignal.timeout(REQUEST_TIMEOUT_MS);
 const CLIENT_HINTS = ["sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform"];
 
 const clearRule = () => chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [RULE_ID] });
@@ -24,10 +26,10 @@ chrome.action.onClicked.addListener((tab) => {
 
 async function fetchRobots(pageUrl: string): Promise<RobotsFetch> {
   try {
-    const res = await fetch(new URL("/robots.txt", pageUrl).href, { credentials: "omit", cache: "no-store" });
+    const res = await fetch(new URL("/robots.txt", pageUrl).href, { credentials: "omit", cache: "no-store", signal: timeout() });
     const challenge = detectChallenge(res.headers);
     if (challenge !== null) return { challenge, status: res.status };
-    return { status: res.status, body: await res.text() };
+    return { status: res.status, body: new TextDecoder().decode((await readCapped(res)).bytes) };
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }
@@ -56,7 +58,7 @@ async function fetchAs(agent: ProbeAgent, req: ProbeRequest): Promise<RawRespons
     ],
   });
   try {
-    return await fetchRaw(req.url, "omit", req.characterSet);
+    return await fetchRaw(req.url, "omit", req.characterSet, { signal: timeout() });
   } finally {
     await clearRule();
   }
@@ -77,14 +79,14 @@ function shuffled<T>(items: readonly T[]): T[] {
 async function runProbe(req: ProbeRequest, isOpen: () => boolean): Promise<ProbeReply | null> {
   const robots = await fetchRobots(req.url);
   if (!isOpen()) return null;
-  const controlA = await fetchRaw(req.url, "omit", req.characterSet);
+  const controlA = await fetchRaw(req.url, "omit", req.characterSet, { signal: timeout() });
   const responses = new Map<string, RawResponse>();
   for (const agent of shuffled(req.agents)) {
     if (!isOpen()) return null;
     responses.set(agent.token, await fetchAs(agent, req));
   }
   if (!isOpen()) return null;
-  const controlB = await fetchRaw(req.url, "omit", req.characterSet);
+  const controlB = await fetchRaw(req.url, "omit", req.characterSet, { signal: timeout() });
   return {
     type: "probe-result",
     robots,
@@ -113,17 +115,32 @@ async function handleProbe(port: chrome.runtime.Port, req: ProbeRequest, isOpen:
 const isProbeRequest = (m: unknown): m is ProbeRequest =>
   typeof m === "object" && m !== null && (m as { type?: unknown }).type === "probe";
 
+/** The user-agent rule may only touch the probed site: an http(s) URL and its own host or www. twin. */
+function isSafeProbe(req: ProbeRequest): boolean {
+  let url: URL;
+  try {
+    url = new URL(req.url);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  const bare = url.hostname.replace(/^www\./, "");
+  return req.hosts.length > 0 && req.hosts.every((h) => h === bare || h === `www.${bare}`);
+}
+
 // One probe at a time: the rule is a single shared slot.
 let queue: Promise<void> = Promise.resolve();
 
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name !== PROBE_PORT) return;
+  // Only the side panel may probe: same extension, and not from a tab (content scripts connect from one).
+  if (port.sender?.id !== chrome.runtime.id || port.sender.tab !== undefined) return;
   let open = true;
   port.onDisconnect.addListener(() => {
     open = false;
   });
   port.onMessage.addListener((message: unknown) => {
-    if (!isProbeRequest(message)) return;
+    if (!isProbeRequest(message) || !isSafeProbe(message)) return;
     queue = queue.then(() => handleProbe(port, message, () => open));
   });
 });

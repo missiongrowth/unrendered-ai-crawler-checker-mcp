@@ -50,6 +50,15 @@ export async function runBotCheck(snapshot: Snapshot): Promise<BotReport> {
   const { origins, hosts } = originsFor(snapshot.url);
   const granted = await chrome.permissions.request({ origins });
   if (!granted) throw new AccessDenied(new URL(snapshot.url).host);
+  try {
+    return await probeAll(snapshot, hosts);
+  } finally {
+    // Site access is for this one check; it is not kept for later.
+    await chrome.permissions.remove({ origins }).catch(() => undefined);
+  }
+}
+
+async function probeAll(snapshot: Snapshot, hosts: string[]): Promise<BotReport> {
   const agents = probedAgents();
   const request: ProbeRequest = { type: "probe", url: snapshot.url, hosts, agents, characterSet: snapshot.characterSet };
   const first = botReport(await probe(request), snapshot.url);

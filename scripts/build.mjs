@@ -25,6 +25,8 @@ await Promise.all([
   // The SIL Open Font License requires the licence to travel with the fonts.
   cp("node_modules/geist/LICENSE.txt", `${out}/fonts/OFL.txt`),
   cp("LICENSE", `${out}/LICENSE`),
+  // Bundled MIT and Apache-2.0 code requires its notices in every copy (legalComments is "none").
+  cp("THIRD_PARTY_NOTICES.md", `${out}/THIRD_PARTY_NOTICES.md`),
   cp("src/manifest.json", `${out}/manifest.json`),
   ...[16, 32, 48, 128].map((size) => cp(`src/icons/icon-${size}.png`, `${out}/icons/icon-${size}.png`)),
   cp("src/icons/mission-growth.svg", `${out}/icons/mission-growth.svg`),

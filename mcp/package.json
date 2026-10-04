@@ -1,6 +1,6 @@
 {
   "name": "unrendered-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server that compares a page's raw HTML with its rendered DOM, using the Unrendered extension's own analysis code.",
   "keywords": [
     "mcp",
@@ -12,6 +12,12 @@
     "raw-html"
   ],
   "homepage": "https://missiongrowth.io/tools/unrendered",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imfurkana/unrendered.git",
+    "directory": "mcp"
+  },
+  "bugs": "https://github.com/imfurkana/unrendered/issues",
   "author": "Mission Growth (https://missiongrowth.io)",
   "license": "AGPL-3.0-only",
   "type": "module",
