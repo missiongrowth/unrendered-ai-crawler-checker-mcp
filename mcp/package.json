@@ -1,7 +1,7 @@
 {
   "name": "unrendered-mcp",
   "version": "0.1.1",
-  "description": "AI crawler checker MCP server: shows which page content GPTBot, ClaudeBot and other AI crawlers miss because it needs JavaScript. Raw HTML vs rendered DOM, from the Unrendered Chrome extension.",
+  "description": "AI crawler checker MCP server: shows which page content GPTBot and ClaudeBot miss because it needs JavaScript. Raw HTML vs rendered DOM, from the Unrendered Chrome extension.",
   "keywords": [
     "mcp",
     "model-context-protocol",

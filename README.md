@@ -6,8 +6,8 @@
 
 **Check what AI crawlers like GPTBot and ClaudeBot can read on any page.**
 
-Unrendered is a free, open-source AI crawler checker. It compares a page's raw HTML with its rendered HTML,<br>
-so you can see which content only appears after JavaScript runs and is invisible to AI crawlers.
+Unrendered compares a page's raw HTML with its rendered HTML,<br>
+so you can see which content only appears after JavaScript runs.
 
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/pboobaoffcajjmbeimkkkodfgpaopegm?label=Chrome%20Web%20Store&color=0B57D0)](https://chromewebstore.google.com/detail/unrendered-ai-crawler-che/pboobaoffcajjmbeimkkkodfgpaopegm)
 [![npm](https://img.shields.io/npm/v/unrendered-mcp?label=unrendered-mcp&color=CB3837)](https://www.npmjs.com/package/unrendered-mcp)
