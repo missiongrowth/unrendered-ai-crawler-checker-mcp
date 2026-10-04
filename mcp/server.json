@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.imfurkana/unrendered-ai-crawler-checker",
+  "title": "Unrendered: AI Crawler Checker",
+  "description": "AI crawler checker: shows which page content GPTBot and ClaudeBot can't read without JavaScript.",
+  "websiteUrl": "https://missiongrowth.io/tools/unrendered",
+  "repository": {
+    "url": "https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "version": "0.1.3",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "unrendered-mcp",
+      "version": "0.1.3",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

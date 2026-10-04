@@ -6,7 +6,7 @@ import { checkBots } from "./bots";
 import { assertPublicHost } from "./guard";
 import { summarizeAnalysis, summarizeBots } from "./summary";
 
-const server = new McpServer({ name: "unrendered-mcp", version: "0.1.2" });
+const server = new McpServer({ name: "unrendered-mcp", version: "0.1.3" });
 const input = { url: z.url({ protocol: /^https?$/ }).describe("Full http(s) URL of the page to analyse") };
 
 type ToolResult = { content: { type: "text"; text: string }[]; isError?: boolean };
