@@ -1,0 +1,38 @@
+name: Bug report
+description: A measurement looks wrong, or the extension or MCP server fails
+labels: [bug]
+body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: Where
+      options:
+        - Chrome extension
+        - MCP server
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      description: The public page that shows the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: Extension version (chrome://extensions) or unrendered-mcp version, and Chrome version.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshot or Markdown report
+      description: The Share tab can copy a Markdown report.
