@@ -16,7 +16,7 @@ Fields of the developer dashboard, in its order. Paste the text between the line
 
 ---
 
-Unrendered is a free AI crawler checker for Chrome. It shows which content on a page AI crawlers such as GPTBot (OpenAI), ClaudeBot (Anthropic) and PerplexityBot can read, and which content they miss because it only appears after JavaScript runs.
+Unrendered is a free AI crawler checker for Chrome. It shows which content on a page AI crawlers such as GPTBot and ClaudeBot can read, and which content they miss because it only appears after JavaScript runs.
 
 Vercel and MERJ measured AI crawler traffic in December 2024 and found that none of the major AI crawlers currently render JavaScript. Text that JavaScript adds is invisible to them. Unrendered compares the page's raw HTML with its rendered HTML and shows you which text that is.
 
@@ -33,7 +33,7 @@ Fields
 • Links that exist only in the rendered HTML.
 
 Bots
-• What robots.txt allows for 22 AI bot tokens, including GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot and Google-Extended, with the matching line.
+• What robots.txt allows for 22 AI bot tokens, with the matching line.
 • How the site answers a request with each bot's user-agent: same page, different page, challenge page, blocked, rate-limited or redirected.
 
 Share
