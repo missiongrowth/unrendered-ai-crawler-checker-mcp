@@ -3,7 +3,7 @@
   "name": "Unrendered - AI Crawler Checker",
   "short_name": "Unrendered",
   "version": "0.1.2",
-  "description": "Compare a page's raw HTML with its rendered HTML to see what AI crawlers that don't run JavaScript can read.",
+  "description": "AI crawler checker: see which content GPTBot, ClaudeBot and other AI crawlers can't read because it needs JavaScript.",
   "minimum_chrome_version": "124",
   "permissions": [
     "activeTab",
