@@ -27,15 +27,18 @@ jobs:
             pnpm-lock.yaml
             mcp/pnpm-lock.yaml
 
-      - name: Extension
+      # The root lint and type check also cover mcp/, so both installs come first.
+      - name: Install
         run: |
           pnpm install --frozen-lockfile
+          pnpm --dir mcp install --frozen-lockfile
           pnpm exec playwright install --with-deps chromium
-          pnpm check
+
+      - name: Extension
+        run: pnpm check
 
       - name: MCP server
         working-directory: mcp
         run: |
-          pnpm install --frozen-lockfile
           pnpm typecheck
           pnpm build
