@@ -6,6 +6,8 @@ paths:
   - "**/sidepanel/**"
   - "**/content/**/*.{ts,js}"
 ---
+# Chrome extensions (MV3)
+
 - `sidePanel.setPanelBehavior({openPanelOnActionClick:true})` grants no activeTab; listen to `action.onClicked` and call `sidePanel.open({tabId})` first (2026-10, xray)
 - With activeTab granted via `action.onClicked`, `scripting.executeScript` works with no host permission and the grant survives same-origin navigation (2026-10, xray)
 - CDP `Extensions.triggerAction` needs the `tab`-type target, not the page target (2026-10, xray)
