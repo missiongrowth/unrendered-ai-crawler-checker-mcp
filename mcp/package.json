@@ -1,7 +1,7 @@
 {
   "name": "unrendered-mcp",
-  "version": "0.1.3",
-  "mcpName": "io.github.imfurkana/unrendered-ai-crawler-checker",
+  "version": "0.1.4",
+  "mcpName": "io.github.missiongrowth/unrendered-ai-crawler-checker",
   "description": "AI crawler checker MCP server: shows which page content GPTBot and ClaudeBot miss because it needs JavaScript. Raw HTML vs rendered DOM, from the Unrendered Chrome extension.",
   "keywords": [
     "mcp",
@@ -20,10 +20,10 @@
   "homepage": "https://missiongrowth.io/tools/unrendered",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp.git",
+    "url": "git+https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp.git",
     "directory": "mcp"
   },
-  "bugs": "https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp/issues",
+  "bugs": "https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp/issues",
   "author": "Mission Growth (https://missiongrowth.io)",
   "license": "AGPL-3.0-only",
   "type": "module",

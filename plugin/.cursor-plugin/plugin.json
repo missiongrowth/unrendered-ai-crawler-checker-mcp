@@ -8,7 +8,7 @@
     "url": "https://missiongrowth.io"
   },
   "homepage": "https://missiongrowth.io/tools/unrendered",
-  "repository": "https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp",
+  "repository": "https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp",
   "license": "AGPL-3.0-only",
   "keywords": ["seo", "ai-search", "crawlers", "javascript-rendering", "robots-txt", "gptbot"],
   "logo": "assets/logo.svg"

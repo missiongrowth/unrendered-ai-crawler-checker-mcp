@@ -1,6 +1,6 @@
 # Contributing
 
-Bug reports with a URL that reproduces them help most. Open an [issue](https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp/issues/new/choose) before a large pull request, so we can agree on the approach first.
+Bug reports with a URL that reproduces them help most. Open an [issue](https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp/issues/new/choose) before a large pull request, so we can agree on the approach first.
 
 ## Setup
 

@@ -14,7 +14,7 @@ It adds the [unrendered-mcp](https://www.npmjs.com/package/unrendered-mcp) serve
 Claude Code:
 
 ```sh
-claude plugin marketplace add imfurkana/unrendered-ai-crawler-checker-mcp
+claude plugin marketplace add missiongrowth/unrendered-ai-crawler-checker-mcp
 claude plugin install unrendered@unrendered
 ```
 

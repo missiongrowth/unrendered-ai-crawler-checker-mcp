@@ -6,7 +6,7 @@ Only the latest release is supported: the current Chrome Web Store version of th
 
 ## Reporting a vulnerability
 
-Please do not open a public issue. Report it privately through [GitHub's private vulnerability reporting](https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp/security/advisories/new), or email contact@missiongrowth.io with "Unrendered security" in the subject.
+Please do not open a public issue. Report it privately through [GitHub's private vulnerability reporting](https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp/security/advisories/new), or email contact@missiongrowth.io with "Unrendered security" in the subject.
 
 Include the version, the steps to reproduce and what an attacker gains. We reply within 5 working days and tell you when a fix ships.
 

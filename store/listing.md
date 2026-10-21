@@ -51,7 +51,7 @@ The extension is not a crawler. Requests come from your browser and your IP, and
 Privacy
 Nothing is sent to Mission Growth or anyone else. No analytics, no accounts, no storage.
 
-Free and open source under the AGPL-3.0. Source code: https://github.com/imfurkana/unrendered-ai-crawler-checker-mcp
+Free and open source under the AGPL-3.0. Source code: https://github.com/missiongrowth/unrendered-ai-crawler-checker-mcp
 Made by Mission Growth: https://missiongrowth.io/tools/unrendered
 
 ---

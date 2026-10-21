@@ -41,7 +41,7 @@ Requires Node 20 or later and Google Chrome. No browser is downloaded.
 Claude Code, as a plugin (the MCP server plus a skill that tells Claude when to use it):
 
 ```sh
-claude plugin marketplace add imfurkana/unrendered-ai-crawler-checker-mcp
+claude plugin marketplace add missiongrowth/unrendered-ai-crawler-checker-mcp
 claude plugin install unrendered@unrendered
 ```
 
